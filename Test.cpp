@@ -1,12 +1,18 @@
 #include <iostream>
 #include <boost/tokenizer.hpp>
 #include <string>
+#include <cstring>
+#include <vector>
+
+using namespace std;
+using namespace boost;
 
 int main()
 {
-    using namespace std;
-    using namespace boost;
-    string s = "ls -a;echo \"hello;world\" && mkdir test || echo world;git status";
+    string s;
+    vector<string> parsedString;
+    cout << "Enter command: ";
+    getline(cin, s);
     string separator1("");//dont let quoted arguments escape themselves
     string separator2(";");//split on semicolon
     string separator3("\"");//let it have quoted arguments
@@ -16,6 +22,9 @@ int main()
 
     for(tokenizer<escaped_list_separator<char> >::iterator beg=tok.begin(); beg!=tok.end();++beg)
     {
-        cout << *beg << "\n";
+        parsedString.push_back(*beg);
     }
+//    for(int i = 0; i<parsedString.size(); i++) {
+//	cout << parsedString.at(i) << endl;
+//    }
 }

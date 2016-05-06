@@ -33,11 +33,13 @@ class Base {
             name = x;
         }
         
-        void setArguement(string x) {
+        void setArguement(string x)
+	{
             arguement = x;
         }
         
-        string getArguement() {
+        string getArguement()
+	{
             return arguement;
         } 
         
