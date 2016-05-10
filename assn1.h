@@ -71,13 +71,11 @@ class Comment:public Base
 
 class Executable:public Base
 {
-    private:
-        Base* child;
-        
     public:
-        Executable(Base* x)
+        Executable(string x, bool y)
         {
-            child = x;
+            this->setArguement(x);
+            this->setExecuted(y);
         }
         void execute();
 };

@@ -12,15 +12,15 @@ void Base::setExecuted(bool x)
     executed = x;
 }
 
-string Base::getName() 
-{
-    return name;
-}
+// string Base::getName() 
+// {
+//     return name;
+// }
 
-void Base::setName(string x)
-{
-    name = x;
-}
+// void Base::setName(string x)
+// {
+//     name = x;
+// }
 
 void Base::setArguement(string x)
 {
@@ -58,5 +58,5 @@ void Comment::execute()
 
 void Executable::execute()
 {
-    //syscalls
+    system(this->getArguement().c_str());
 }
