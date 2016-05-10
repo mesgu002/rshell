@@ -4,7 +4,8 @@
 using namespace std;
 using namespace boost;
 
-void parse(string s, vector<string> &x) {
+void parse(string s, vector<string> &x) 
+{
     string separator1("");//dont let quoted arguments escape themselves
     string separator2(";");//split on semicolon
     string separator3("\"");//let it have quoted arguments
@@ -17,6 +18,7 @@ void parse(string s, vector<string> &x) {
         x.push_back(*beg);
     }
 }
+
 int main() 
 {
     string command;
