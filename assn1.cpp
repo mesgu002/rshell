@@ -58,5 +58,5 @@ void Comment::execute()
 
 void Executable::execute()
 {
-    //implement syscalls
+    //syscalls
 }

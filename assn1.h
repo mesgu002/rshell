@@ -1,11 +1,18 @@
+#ifndef ASSN1_H
+#define ASSN1_H
+
 #include <iostream>
+#include <string>
+#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 
 class Base {
     private:
         bool executed;
-        string name;
+        //string name;
         string arguement;
     
     public:
@@ -13,8 +20,8 @@ class Base {
         virtual void execute() = 0;
         bool getExecuted();
         void setExecuted(bool x);
-        string getName();
-        void setName(string x);
+        //string getName();
+        //void setName(string x);
         void setArguement(string x);
         string getArguement();
 };
@@ -74,3 +81,5 @@ class Executable:public Base
         }
         void execute();
 };
+
+#endif

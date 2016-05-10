@@ -1,7 +1,7 @@
 all: main.o assn1.o
 	g++ -W -Wall -Werror -pedantic -ansi main.o assn1.o
 
-main.o: assn1.cpp assn1.h
+main.o: assn1.cpp assn1.h main.cpp
 	g++ -W -Wall -Werror -pedantic -ansi -c main.cpp
 	
 assn1.o: assn1.cpp assn1.h
