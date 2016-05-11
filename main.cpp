@@ -38,9 +38,9 @@ void parseConnectors(vector<string> x, vector<string> &y)                   //sp
     //expect: ls -a
     //        hello
     //        world
-//echo hello || echo world && echo hello world
+// echo hello || echo world && echo hello world
     //expect: hello
-//ech hello || echo world && echo hello world
+// ech hello || echo world && echo hello world
     //expect: world
     //        hello world
 
