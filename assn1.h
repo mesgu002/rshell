@@ -12,6 +12,7 @@ using namespace std;
 class Base {
     private:
         bool executed;
+        bool hasBeenExecuted;
         //string name;
         string arguement;
     
@@ -20,6 +21,8 @@ class Base {
         virtual void execute() = 0;
         bool getExecuted();
         void setExecuted(bool x);
+        bool gethasBeenExecuted();
+        void sethasBeenExecuted(bool x);
         //string getName();
         //void setName(string x);
         void setArguement(string x);
@@ -72,10 +75,11 @@ class Comment:public Base
 class Executable:public Base
 {
     public:
-        Executable(string x, bool y)
+        Executable(string x, bool y, bool z)
         {
             this->setArguement(x);
             this->setExecuted(y);
+            this->sethasBeenExecuted(z);
         }
         void execute();
 };

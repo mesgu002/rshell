@@ -12,6 +12,16 @@ void Base::setExecuted(bool x)
     executed = x;
 }
 
+bool Base::gethasBeenExecuted()
+{
+    return hasBeenExecuted;
+}
+
+void Base::sethasBeenExecuted(bool x)
+{
+    hasBeenExecuted = x;
+}
+
 // string Base::getName() 
 // {
 //     return name;
@@ -35,9 +45,14 @@ string Base::getArguement()
 void Or::execute() 
 {
     left->execute();
-    if(!left->getExecuted()) 
+    if(left->getExecuted() == false) 
     {
         right->execute();
+    }
+    else
+    {
+        right->setExecuted(false);
+        right->sethasBeenExecuted(true);
     }
 }
 
@@ -47,6 +62,11 @@ void And::execute()
     if(left->getExecuted()) 
     {
         right->execute();
+    }
+    else
+    {
+        right->setExecuted(false);
+        right->sethasBeenExecuted(true);
     }
 }
 
@@ -58,5 +78,14 @@ void Comment::execute()
 
 void Executable::execute()
 {
-    system(this->getArguement().c_str());
+    if(!this->gethasBeenExecuted())
+    {
+        if(system(this->getArguement().c_str()) != 0) {
+            this->setExecuted(false);
+        }
+        else {
+            this->setExecuted(true);
+        }
+        this->sethasBeenExecuted(true);
+    }
 }
