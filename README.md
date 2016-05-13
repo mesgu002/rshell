@@ -1,6 +1,7 @@
 # rshell
 
-![rshell](/img/rshell.png)
+![rshell](/img/rshell.png) 
+
 A **c++** implementation of **shell**
 ##Authors and Contributors
 Glenn Cochran and Montana Esguerra
