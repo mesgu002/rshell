@@ -51,6 +51,7 @@ Partner info .txt:
 
 ##License
 GNU General Public License.
+Version 3, 29 June 2007
 
 ##Bugs:
 
