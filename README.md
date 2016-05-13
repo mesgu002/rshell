@@ -52,6 +52,7 @@ Partner info .txt:
     ucrnetid1=gcoch001
     name2=Montana Esguerra
     ucrnetid2=mesgu002
+	repourl= https://github.com/mesgu002/rshell
 ```
 ##License
 GNU General Public License.
