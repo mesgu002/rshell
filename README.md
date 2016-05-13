@@ -1,40 +1,70 @@
 # rshell
-A c++ implementation of shell
+![alt text](http://studentlife.ucr.edu/images/school_spirit_bearlogo.png)
 
-Parser:
-    Parser unable to handle quotes("")
+A **c++** implementation of **shell**
+##Authors and Contributors
+Glenn Cochran and Montana Esguerra
+---
 
-Syscalls:
-    Not implemented
+##To Run rshell:
+Enter these commands in the following order:  
+```
+1. git clone https://github.com/mesgu002/rshell
+2. cd rshell
+3. make
+4. ./a.out
+```
+You are now ready to use rshell!
 
-To run rshell:
-    git clone https://github.com/yourusername/rshell.git
-    cd rshell
-    git checkout hw2
-    make
-    bin/rshell
+##How it works:
+rshell takes in commands on one line and executes them from left to right.  
+Currently, it supports ls, mkdir, and echo. It also supports the connectors &&, ||, and ;
+
+###&& Connector
+If a command is followed by the && connector, then the next command is executed only if the first one succeeds.
+
+###|| Connector
+If a command is followed by the || connector, then the next command is executed only if the first one fails.
+
+###; Connector
+If a command is followed by the ; connector, then the next command is always executed.
+
+## Test Scripts:
+We have also included a set of test scripts for you to try with rshell!  
+To run them, enter this command within the src directory:
+
+```
+./test/script
+```
+where script can be replaced by any of these following provided scripts:
+```
+1. single_command.sh // tests single commands
+2. multi_command.sh // tests commands with ;, &&, or ||
+3. commented_command.sh // tests commands with comments
+4. exit.sh             //tests exit  and commands with exit
+```
+##Partner Info:
 
 Partner info .txt:
+```
     name1=Glenn Cochran
     ucrnetid1=gcoch001
     name2=Montana Esguerra
     ucrnetid2=mesgu002
+```
+##License
+GNU General Public License.
+Version 3, 29 June 2007
 
-Make a directory called src
+##Bugs:
 
-Make a makefile:
-    targets:
-    	-all
-	-rshell
+1. rshell can't handle the cd command.
 
-To compile:
-    g++ -Wall -Werror -ansi -pedantic
-
+---
 Readme:
     summarize file
     known bugs
 
-~Read intro to writing readme files~
 
 Directory named test:
     contains bash script that fully tests each segment
