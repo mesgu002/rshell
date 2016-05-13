@@ -27,19 +27,21 @@ If a command is followed by the || connector, then the next command is executed 
 ###; Connector
 If a command is followed by the ; connector, then the next command is always executed.
 
+## Test Scripts:
+We have also included a set of test scripts for you to try with rshell!  
+To run them, enter this command within the src directory:
 
-Parser:
-    Parser unable to handle quotes("")
-
-Syscalls:
-    Not implemented
-
-To run rshell:
-    git clone https://github.com/yourusername/rshell.git
-    cd rshell
-    git checkout hw2
-    make
-    bin/rshell
+```
+./test/script
+```
+where script can be replaced by any of these following provided scripts:
+```
+1. single_command.sh // tests single commands
+2. multi_command.sh // tests commands with ;, &&, or ||
+3. commented_command.sh // tests commands with comments
+4. exit.sh             //tests exit  and commands with exit
+```
+##Partner Info:
 
 Partner info .txt:
     name1=Glenn Cochran
@@ -47,21 +49,15 @@ Partner info .txt:
     name2=Montana Esguerra
     ucrnetid2=mesgu002
 
-Make a directory called src
+##Bugs:
 
-Make a makefile:
-    targets:
-    	-all
-	-rshell
+1. rshell can't handle the cd command.
 
-To compile:
-    g++ -Wall -Werror -ansi -pedantic
-
+---
 Readme:
     summarize file
     known bugs
 
-~Read intro to writing readme files~
 
 Directory named test:
     contains bash script that fully tests each segment
