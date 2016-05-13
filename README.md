@@ -62,18 +62,3 @@ Version 3, 29 June 2007
 1. rshell can't handle the cd command.
 
 ---
-Readme:
-    summarize file
-    known bugs
-
-
-Directory named test:
-    contains bash script that fully tests each segment
-    single_command.sh
-    multi_command.sh
-    commented_command.sh
-    exit.sh
-
-
-~Comment code~
-Follow CalTech coding guidelines
