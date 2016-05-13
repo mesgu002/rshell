@@ -1,8 +1,8 @@
 # rshell
 ##A c++ implementation of shell
 ##Authors and Contributors
-### Glenn Cochran and Montana Esguerra
-
+Glenn Cochran and Montana Esguerra
+---
 Parser:
     Parser unable to handle quotes("")
 
