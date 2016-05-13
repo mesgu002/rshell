@@ -1,6 +1,5 @@
 # rshell
 ![alt text](http://studentlife.ucr.edu/images/school_spirit_bearlogo.png)
-[comment]: <> ![rshell](img/rshell.png)
 
 A **c++** implementation of **shell**
 ##Authors and Contributors
