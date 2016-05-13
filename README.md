@@ -44,11 +44,12 @@ where script can be replaced by any of these following provided scripts:
 ##Partner Info:
 
 Partner info .txt:
+```
     name1=Glenn Cochran
     ucrnetid1=gcoch001
     name2=Montana Esguerra
     ucrnetid2=mesgu002
-
+```
 ##License
 GNU General Public License.
 Version 3, 29 June 2007
