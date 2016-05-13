@@ -41,7 +41,6 @@ bool callingExecute(vector<Base *> x, bool counter, unsigned location)
     }
     int status = 0;
     int pid = fork();
-    //int curr;
     if (pid == -1) 
     {
         perror("fork");
@@ -91,7 +90,6 @@ bool callingExecute(vector<Base *> x, bool counter, unsigned location)
 int main() 
 {
     string command;
-    bool loop = true;
     size_t find;
     string login;
     if (getlogin() == NULL)
@@ -108,18 +106,23 @@ int main()
     {
         perror("get host name failed");
     }
-    while (loop)
-    {    
+    while (true)
+    {
         vector<string> tempString1;
         vector<string> parsedString;
-        if (getlogin() != NULL)
-        {
-            cout << login << "@" << host;
-        }
-        cout << "$ ";
-        getline(cin, command);
-        parse(command, tempString1);
         vector<Base *> commands;
+        while (command == "")
+        {
+            if (getlogin() != NULL)
+            {
+                cout << login << "@" << host;
+            }
+            cout << "$ ";
+            getline(cin, command);    
+        }
+        
+        parse(command, tempString1);
+        
         for (unsigned i = 0; i < tempString1.size(); i++) 
         {
             find = tempString1.at(i).find("exit");
@@ -129,94 +132,77 @@ int main()
                 exit(0);
             }
         }
-        vector<string> mytok;
+        
+        parseConnectors(tempString1, parsedString); //parses at connectors
+        
+        vector<string> mytok;       //check to make sure first char isnt ' '
     	char_separator<char> space(" ");
-    	for (unsigned i = 0; i < tempString1.size(); ++i)
+    	for (unsigned i = 0; i < parsedString.size(); ++i)
     	{
-            size_t found = tempString1.at(i).find(" ");
+            size_t found = parsedString.at(i).find(" ");
             if (found == 0)
     	    {
-    	        tempString1.at(i).replace(tempString1.at(i).find(" "),1 , "");
+    	        parsedString.at(i).replace
+    	            (parsedString.at(i).find(" "), 1 , "");
     	    }
     	}
-        parseConnectors(tempString1, parsedString);
-        vector<Base* > tempString(parsedString.size() - 1);
-        for (unsigned i = 0; i < parsedString.size(); i++)
-        {
-            tempString.push_back(0);
-            if (parsedString.at(i) != "|" && parsedString.at(i) != "&")
+    	   
+    	if (parsedString.size() == 1)
+    	{
+    	    Executable* x = new Executable(parsedString.at(0), true, false);
+    	    commands.push_back(x);
+    	}
+    	else
+    	{
+            for (unsigned i = 1; i < parsedString.size(); ++i)
             {
-                Executable* x = new Executable(parsedString.at(i), true, false);
-                tempString.at(i) = x;
-            }
-        }
-        
-        if (parsedString.size() > 2) 
-        {
-            for (unsigned i = 0; i < parsedString.size() - 2; i++) 
-            {
-                if(parsedString.at(i + 1) == "|" && parsedString.at(i + 2) == 
-                    "|")
+                if (parsedString.at(i) == "|" && i < parsedString.size() - 2)
                 {
-                    Or* z = new Or(tempString.at(i), tempString.at(i + 3));
-                    commands.push_back(z);
+                    if (parsedString.at(i + 1) == "|")
+                    {
+                        Executable* x = new Executable(parsedString.at(i - 1),
+                            true, false);
+                        Executable* y = new Executable(parsedString.at(i + 2),
+                            true, false);
+                        Or* cmd = new Or(x, y);
+                        cout << "TEST1" << endl;
+                        commands.push_back(cmd);
+                        i += 2;
+                    }
                 }
-                else if (parsedString.at(i + 1) == "&" && parsedString.at(i + 2)
-                    == "&")
+                else if (parsedString.at(i) == "&" && i < parsedString.size() - 2)
                 {
-                    And* a = new And(tempString.at(i), tempString.at(i + 3));
-                    commands.push_back(a);
+                    if (parsedString.at(i + 1) == "&")
+                    {
+                        Executable* x = new Executable(parsedString.at(i - 1),
+                            true, false);
+                        Executable* y = new Executable(parsedString.at(i + 2),
+                            true, false);
+                        And* cmd = new And(x, y);
+                        cout << "TEST2" << endl;
+                        commands.push_back(cmd);
+                        i += 2;
+                    }
                 }
-                else if (parsedString.at(i) != "|" && parsedString.at(i) != "&")
+                else if (parsedString.at(i) == "#")
                 {
-                    commands.push_back(tempString.at(i));
-                }
-            }
-            commands.push_back(NULL);
-            loop = callingExecute(commands, false, 0);
-        }
-        
-        else if (parsedString.size() == 2)
-        {
-            commands.push_back(tempString.at(0));
-            commands.push_back(tempString.at(1));
-            int status = 0;
-            int pid = fork();
-            if (pid == -1) 
-            {
-                perror("fork");
-            }
-            else if (pid == 0) //child
-            {
-                commands.at(0)->execute();
-            }
-            else //parent
-            {
-                int wpid;
-                do
-                {
-                    wpid = waitpid(pid, &status, WUNTRACED);
-                }
-                while (wpid == -1 && errno == EINTR);
-                
-                if (wpid == -1)
-                {
-                    perror("Error with wait().");
+                    break;
                 }
                 else
                 {
-                    commands.at(1)->execute();
+                    if (i == 1)
+                    {
+                        Executable* x = new Executable(parsedString.at(0), true, false);
+                        commands.push_back(x);
+                    }
+                    Executable* x = new Executable(parsedString.at(i), true, false);
+                    cout << "TEST3" << endl;
+                    commands.push_back(x);
                 }
             }
         }
-        
-        else
-        {
-            commands.push_back(tempString.at(0));
-            commands.push_back(NULL);
-            commands.at(0)->execute();
-        }
-        
+        cout << commands.size() << endl;
+        break;
     }
     return 0;
 }
