@@ -111,18 +111,20 @@ void Executable::execute()
     vector<string> mytok;
     char_separator<char> space(" ");
     tokenizer<char_separator<char> > toks(temp1, space);
-    for(tokenizer<char_separator<char> >::iterator it = toks.begin(); it != toks.end(); it++)
+    //cout << temp1 << endl;
+    for (tokenizer<char_separator<char> >::iterator it = toks.begin(); it 
+        != toks.end(); it++)
 	{
 		mytok.push_back(*it);
 	}
     char** temp = new char*[mytok.size() + 1];
-    for(unsigned i = 0; i < mytok.size(); ++i) {
+    for (unsigned i = 0; i < mytok.size(); ++i) {
         temp[i] = new char[mytok.at(i).size()];
         strcpy(temp[i], mytok.at(i).c_str());
     }
-    if(!this->gethasBeenExecuted())
+    if (!this->gethasBeenExecuted())
     {
-        if(execvp(temp[0], temp) == -1) {
+        if (execvp(temp[0], temp) == -1) {
             perror("execvp");
             this->setExecuted(false);
             exit(1);
