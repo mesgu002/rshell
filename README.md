@@ -49,6 +49,9 @@ Partner info .txt:
     name2=Montana Esguerra
     ucrnetid2=mesgu002
 
+##License
+GNU General Public License.
+
 ##Bugs:
 
 1. rshell can't handle the cd command.
