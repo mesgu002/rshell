@@ -12,7 +12,7 @@ Enter these commands in the following order:
 1. git clone https://github.com/mesgu002/rshell
 2. cd rshell
 3. make
-4. ./a.out
+4. ./bin/rshell
 ```
 You are now ready to use rshell!
 
