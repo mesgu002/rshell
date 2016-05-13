@@ -2,11 +2,13 @@ all: main.o assn1.o
 	mkdir -p ./bin
 	g++ -W -Wall -Werror -pedantic -ansi main.o assn1.o -o ./bin/rshell
 
-main.o: assn1.cpp assn1.h main.cpp
-	g++ -W -Wall -Werror -pedantic -ansi -c main.cpp
+main.o: src/main.cpp
+	mkdir -p ./bin
+	g++ -W -Wall -Werror -pedantic -ansi src/main.cpp -c
 	
-assn1.o: assn1.cpp assn1.h
-	g++ -W -Wall -Werror -pedantic -ansi -c assn1.cpp
+assn1.o: src/assn1.cpp src/assn1.h
+	mkdir -p ./bin
+	g++ -W -Wall -Werror -pedantic -ansi src/assn1.cpp -c
 	
 clean:
 	rm *o -rf bin
