@@ -1,6 +1,7 @@
 #include "assn1.h"
 
 using namespace std;
+using namespace boost;
 
 bool Base::getExecuted() 
 {
@@ -22,16 +23,6 @@ void Base::sethasBeenExecuted(bool x)
     hasBeenExecuted = x;
 }
 
-// string Base::getName() 
-// {
-//     return name;
-// }
-
-// void Base::setName(string x)
-// {
-//     name = x;
-// }
-
 void Base::setArguement(string x)
 {
     arguement = x;
@@ -44,7 +35,10 @@ string Base::getArguement()
         
 void Or::execute() 
 {
-    left->execute();
+    if(!left->gethasBeenExecuted())
+    {
+        left->execute();
+    }
     if(left->getExecuted() == false) 
     {
         right->execute();
@@ -52,13 +46,29 @@ void Or::execute()
     else
     {
         right->setExecuted(false);
-        right->sethasBeenExecuted(true);
+    }
+}
+
+void Or::multihasBeenExecuted(bool a, bool b)
+{
+    left->sethasBeenExecuted(a);
+    right->sethasBeenExecuted(b);
+}
+
+void Or::multiExecuted()
+{
+    if(left->getExecuted())
+    {
+        right->setExecuted(false);
     }
 }
 
 void And::execute() 
 {
+    if(!left->gethasBeenExecuted())
+    {
     left->execute();
+    }
     if(left->getExecuted()) 
     {
         right->execute();
@@ -66,7 +76,20 @@ void And::execute()
     else
     {
         right->setExecuted(false);
-        right->sethasBeenExecuted(true);
+        //right->sethasBeenExecuted(true);
+    }
+}
+
+void And::multihasBeenExecuted(bool a, bool b)
+{
+    left->sethasBeenExecuted(a);
+    right->sethasBeenExecuted(b);
+}
+
+void And::multiExecuted()
+{
+    if(!left->getExecuted()) {
+        right->setExecuted(false);
     }
 }
 
@@ -76,16 +99,39 @@ void Comment::execute()
     child->execute();
 }
 
+void Comment::multihasBeenExecuted(bool a, bool b)
+{ a = b; b = a; }
+
+void Comment::multiExecuted()
+{ }
+
 void Executable::execute()
 {
+    string temp1 = this->getArguement();
+    vector<string> mytok;
+    char_separator<char> space(" ");
+    tokenizer<char_separator<char> > toks(temp1, space);
+    for(tokenizer<char_separator<char> >::iterator it = toks.begin(); it != toks.end(); it++)
+	{
+		mytok.push_back(*it);
+	}
+    char** temp = new char*[mytok.size() + 1];
+    for(unsigned i = 0; i < mytok.size(); ++i) {
+        temp[i] = new char[mytok.at(i).size()];
+        strcpy(temp[i], mytok.at(i).c_str());
+    }
     if(!this->gethasBeenExecuted())
     {
-        if(system(this->getArguement().c_str()) != 0) {
+        if(execvp(temp[0], temp) == -1) {
+            perror("execvp");
             this->setExecuted(false);
+            exit(1);
         }
-        else {
-            this->setExecuted(true);
-        }
-        this->sethasBeenExecuted(true);
     }
 }
+
+void Executable::multihasBeenExecuted(bool a, bool b)
+{ a = b; b = a; }
+
+void Executable::multiExecuted()
+{ }

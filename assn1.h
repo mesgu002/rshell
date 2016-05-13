@@ -2,10 +2,15 @@
 #define ASSN1_H
 
 #include <iostream>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cerrno>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <boost/tokenizer.hpp>
 
 using namespace std;
 
@@ -13,7 +18,6 @@ class Base {
     private:
         bool executed;
         bool hasBeenExecuted;
-        //string name;
         string arguement;
     
     public:
@@ -23,8 +27,8 @@ class Base {
         void setExecuted(bool x);
         bool gethasBeenExecuted();
         void sethasBeenExecuted(bool x);
-        //string getName();
-        //void setName(string x);
+        virtual void multihasBeenExecuted(bool x, bool y) = 0;
+        virtual void multiExecuted() = 0;
         void setArguement(string x);
         string getArguement();
 };
@@ -42,6 +46,8 @@ class Or:public Base
             right = y;
         }
         void execute();
+        void multihasBeenExecuted(bool x, bool y);
+        void multiExecuted();
 };
 
 class And:public Base 
@@ -57,6 +63,8 @@ class And:public Base
             right = y;
         }
         void execute();
+        void multihasBeenExecuted(bool x, bool y);
+        void multiExecuted();
 };
 
 class Comment:public Base
@@ -70,6 +78,8 @@ class Comment:public Base
             child = x;
         }
         void execute();
+        void multihasBeenExecuted(bool x, bool y);
+        void multiExecuted();
 };
 
 class Executable:public Base
@@ -82,6 +92,8 @@ class Executable:public Base
             this->sethasBeenExecuted(z);
         }
         void execute();
+        void multihasBeenExecuted(bool x, bool y);
+        void multiExecuted();
 };
 
 #endif
