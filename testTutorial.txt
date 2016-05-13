@@ -1,1 +1,5 @@
-To test rshell, run ./test/test?.sh where '?' is just any integer.
+
+single_command.sh #tests single commands
+multi_command.sh #tests commands with ;, &&, or ||
+commented_command.sh #tests commands with comments
+exit.sh #tests exit and commands with exit
