@@ -52,6 +52,7 @@ Partner info .txt:
     ucrnetid1=gcoch001
     name2=Montana Esguerra
     ucrnetid2=mesgu002
+	repourl= https://github.com/mesgu002/rshell
 ```
 ##License
 GNU General Public License.
@@ -60,5 +61,6 @@ Version 3, 29 June 2007
 ##Bugs:
 
 1. rshell can't handle the cd command.
+2. Can't execute commands on the same line exit() is called
 
 ---
