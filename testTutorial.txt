@@ -1,0 +1,1 @@
+To test rshell, run ./test/test?.sh where '?' is just any integer.
