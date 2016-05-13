@@ -60,5 +60,6 @@ Version 3, 29 June 2007
 ##Bugs:
 
 1. rshell can't handle the cd command.
+2. Can't execute commands on the same line exit() is called
 
 ---
