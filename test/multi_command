@@ -3,4 +3,10 @@ echo hello && echo world && echo "//&&||can##@I//\\have^%@!an@#*&^%A()@#:*please
 
 echo hello || echo world || echo how are you
 
+ls -a ; echo hello && echo world; echo hello || echo world; mkdir newFolder
 
+echo "\;" ; echo "\;" && echo "\; \; \;" 
+
+ls -l && ls -a || echo "yeah, that just happened"
+
+cout << "Hello World" << endl;
