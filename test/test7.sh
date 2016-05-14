@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./a.out <<< ' echo hello && echo world '
+./bin/rshell <<< ' echo hello && echo world '

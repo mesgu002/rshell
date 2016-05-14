@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./a.out <<< 'ls # -a '
+./bin/rshell <<< 'ls # -a '
 #test failed

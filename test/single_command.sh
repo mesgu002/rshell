@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./a.out <<< 'ls -a'
-./a.out <<< 'echo hello world'
-./a.out <<< 'mkdir apple'
+./bin/rshell <<< 'ls -a'
+./bin/rshell <<< 'echo Hello World'
+./bin/rshell <<< 'mkdir newFolder'
