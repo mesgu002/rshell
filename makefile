@@ -1,6 +1,6 @@
 all: main.o assn1.o
 	mkdir -p ./bin
-	g++ -W -Wall -Werror -pedantic -ansi main.o assn1.o -o ./bin/rshell
+	g++ -W -Wall -Werror -pedantic -ansi main.o assn1.o	-o ./bin/rshell
 
 main.o: src/main.cpp
 	mkdir -p ./bin

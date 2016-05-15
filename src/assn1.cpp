@@ -1,8 +1,5 @@
 #include "assn1.h"
 
-using namespace std;
-using namespace boost;
-
 bool Base::getExecuted()
 {
     return executed;
@@ -92,6 +89,7 @@ void And::execute(int x)
     }
     exit(0);
 }
+
 bool And::isOr() 
 {
     return false;

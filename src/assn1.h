@@ -13,8 +13,10 @@
 #include <boost/tokenizer.hpp>
 
 using namespace std;
+using namespace boost;
 
-class Base {
+class Base 
+{
     private:
         bool executed;          //did it execute?
         bool hasBeenExecuted;   //whether it has been executed yet

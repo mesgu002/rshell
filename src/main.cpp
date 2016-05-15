@@ -1,8 +1,8 @@
 #include "assn1.h"
 
-using namespace std;
-using namespace boost;
 
+//parse the string s (user input) at ';' without interrupting quoted
+//arguements
 void parse(string s, vector<string> &x) 
 {
     string separator1("");//dont let quoted arguments escape themselves
@@ -19,6 +19,8 @@ void parse(string s, vector<string> &x)
     }
 }
 
+
+//parse the strings at '|' and '&' and push_back onto another vector.
 void parseConnectors(vector<string> x, vector<string> &y)
 {                                                   //split up parsed strings
     typedef tokenizer<char_separator<char> > tokenizer;
@@ -34,56 +36,66 @@ void parseConnectors(vector<string> x, vector<string> &y)
     }
 }
 
+
+//Use the syscalls fork, waitpid, and execvp to execute the commands
+//recursively
 void callingExecute(vector<Base *> x, unsigned location, int child) 
 {
-    if (location >= x.size() - 1)
-    {
-        return;
-    }
+    
+    if (location >= x.size() - 1)       //Function ends when the it goes
+    {                                   //through every element in the vector
+        return;                         //x.size() - 1 because last element is
+    }                                   //'NULL'
+    
     int status = 0;
     int pid = fork();
-    if (pid == -1) 
+    
+    if (pid == -1)                      //fork() error
     {
         perror("fork");
     }
-    else if (pid == 0) //child
+    else if (pid == 0)                  //child process
     {
-        x.at(location)->execute(child);
-    }
-    else //parent
+        x.at(location)->execute(child); //child parameter is to pick which
+    }                                   //node (left or right) to execute
+    
+    else                                //parent process
     {
         int wpid;
         do
         {
-            wpid = waitpid(pid, &status, WUNTRACED);
-        }
+            wpid = waitpid(pid, &status, WUNTRACED); //Parent waits for child
+        }                                            //to finish
         while (wpid == -1 && errno == EINTR);
 
-        if (wpid == -1)
+        if (wpid == -1)                              //Error with waitpid()
         {
             perror("Error with wait().");
         }
-        if (WIFSIGNALED(status))
-        {
+        
+        if (WIFSIGNALED(status))                    //execvp() error or
+        {                                           //invalid command
             x.at(location)->setChildExecuted(false, child);
             // last call failed
-            if (x.at(location)->isOr())
+            if (x.at(location)->isOr())     //Check to see if Or objects
             {
+                //Set node was executed
                 x.at(location)->setChildBeenExecuted(true, child);
                 if(child == 0)
                 {
-                    callingExecute(x, location, 1); // run the other side
+                    callingExecute(x, location, 1); //Run the right node
                 }
                 else
                 {
-                    callingExecute(x, ++location, 0);
+                    callingExecute(x, ++location, 0); //Run next command
                 }
             }
-            else if(x.at(location)->isAnd())
+            else if(x.at(location)->isAnd())    //Check to see if And objects
             {
-                x.at(location)->setChildBeenExecuted(true, child);
-                if (child == 0)
+                x.at(location)->setChildBeenExecuted(true, child); //Set node
+                if (child == 0)                     //was executed
                 {
+                    //Set right node didn't succeed, but was  
                     x.at(location)->setChildExecuted(false, 1);
                     x.at(location)->setChildBeenExecuted(true, 1);
                 }
@@ -94,8 +106,9 @@ void callingExecute(vector<Base *> x, unsigned location, int child)
                 callingExecute(x, ++location, 0);
             }
         }
-        else
-        {
+        
+        else                                        //execvp() executed
+        {                                           //correctly
             if (x.at(location)->isOr())
             {
                 x.at(location)->setChildBeenExecuted(true, child);
@@ -130,6 +143,7 @@ int main()
 {
     string command;
     size_t find;
+    size_t comments;
     string login;
     if (getlogin() == NULL)
     {
@@ -166,10 +180,16 @@ int main()
         for (unsigned i = 0; i < tempString1.size(); i++) 
         {
             find = tempString1.at(i).find("exit");
+            comments = tempString1.at(i).find("#");
             if (find != string::npos)
             {
                 cout << "Goodbye!" << endl;
                 exit(0);
+            }
+            if (comments != string::npos)
+            {
+                tempString1.erase(tempString1.begin() + comments
+                    , tempString1.end());
             }
         }
         
@@ -215,11 +235,6 @@ int main()
                 {
                     if (parsedString.at(i + 1) == "|")
                     {
-                        // Executable* x = new Executable(parsedString.at(i - 1),
-                        //     true, false);
-                        // Executable* y = new Executable(parsedString.at(i + 2),
-                        //     true, false);
-                        // Or* cmd = new Or(x, y);
                         Or* cmd = new Or(test.at(i - 1), test.at(i + 2));
                         commands.push_back(cmd);
                         i += 2;
@@ -230,11 +245,6 @@ int main()
                 {
                     if (parsedString.at(i + 1) == "&")
                     {
-                        // Executable* x = new Executable(parsedString.at(i - 1),
-                        //     true, false);
-                        // Executable* y = new Executable(parsedString.at(i + 2),
-                        //     true, false);
-                        // And* cmd = new And(x, y);
                         And* cmd = new And(test.at(i - 1), test.at(i + 2));
                         commands.push_back(cmd);
                         i += 2;
