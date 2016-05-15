@@ -16,19 +16,21 @@ using namespace std;
 
 class Base {
     private:
-        bool executed;
-        bool hasBeenExecuted;
-        string arguement;
+        bool executed;          //did it execute?
+        bool hasBeenExecuted;   //whether it has been executed yet
+        string arguement;       //command
     
     public:
         Base() { }
-        virtual void execute() = 0;
+        virtual void execute(int x) = 0;
+        virtual bool isOr() = 0;
+        virtual bool isAnd() = 0;
+        virtual void setChildExecuted(bool a, int b) = 0;
+        virtual void setChildBeenExecuted(bool a, int b) = 0;
         bool getExecuted();
         void setExecuted(bool x);
         bool gethasBeenExecuted();
         void sethasBeenExecuted(bool x);
-        virtual void multihasBeenExecuted(bool x, bool y) = 0;
-        virtual void multiExecuted() = 0;
         void setArguement(string x);
         string getArguement();
 };
@@ -45,9 +47,11 @@ class Or:public Base
             left = x;
             right = y;
         }
-        void execute();
-        void multihasBeenExecuted(bool x, bool y);
-        void multiExecuted();
+        void execute(int x);
+        bool isOr();
+        bool isAnd();
+        void setChildBeenExecuted(bool b, int a);
+        void setChildExecuted(bool a, int b);
 };
 
 class And:public Base 
@@ -62,9 +66,11 @@ class And:public Base
             left = x;
             right = y;
         }
-        void execute();
-        void multihasBeenExecuted(bool x, bool y);
-        void multiExecuted();
+        void execute(int x);
+        bool isOr();
+        bool isAnd();
+        void setChildBeenExecuted(bool b, int a);
+        void setChildExecuted(bool a, int b);
 };
 
 class Comment:public Base
@@ -77,9 +83,11 @@ class Comment:public Base
         {
             child = x;
         }
-        void execute();
-        void multihasBeenExecuted(bool x, bool y);
-        void multiExecuted();
+        void execute(int x);
+        bool isOr();
+        bool isAnd();
+        void setChildBeenExecuted(bool b, int a);
+        void setChildExecuted(bool a, int b);
 };
 
 class Executable:public Base
@@ -91,9 +99,11 @@ class Executable:public Base
             this->setExecuted(y);
             this->sethasBeenExecuted(z);
         }
-        void execute();
-        void multihasBeenExecuted(bool x, bool y);
-        void multiExecuted();
+        void execute(int x);
+        bool isOr();
+        bool isAnd();
+        void setChildBeenExecuted(bool a, int b);
+        void setChildExecuted(bool a, int b);
 };
 
 #endif

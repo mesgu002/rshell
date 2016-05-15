@@ -3,7 +3,7 @@
 using namespace std;
 using namespace boost;
 
-bool Base::getExecuted() 
+bool Base::getExecuted()
 {
     return executed;
 }
@@ -33,107 +33,161 @@ string Base::getArguement()
     return arguement;
 } 
         
-void Or::execute() 
+void Or::execute(int x) 
 {
-    if(!left->gethasBeenExecuted())
+    if(!left->gethasBeenExecuted() && x == 0)
     {
-        left->execute();
+        left->execute(x);
     }
-    if(left->getExecuted() == false) 
+    else if (!right->gethasBeenExecuted() && x == 1 && !left->getExecuted())
     {
-        right->execute();
+        right->execute(x);    
+    }
+    exit(0);
+}
+
+bool Or::isOr() 
+{
+    return true;
+}
+
+bool Or::isAnd() 
+{
+    return false;
+}
+
+void Or::setChildBeenExecuted(bool x, int y)
+{
+    if (y == 0)
+    {
+        left->sethasBeenExecuted(x);
     }
     else
     {
-        right->setExecuted(false);
+        right->sethasBeenExecuted(x);
     }
 }
 
-void Or::multihasBeenExecuted(bool a, bool b)
+void Or::setChildExecuted(bool x, int y)
 {
-    left->sethasBeenExecuted(a);
-    right->sethasBeenExecuted(b);
-}
-
-void Or::multiExecuted()
-{
-    if(left->getExecuted())
+    if (y == 0)
     {
-        right->setExecuted(false);
-    }
-}
-
-void And::execute() 
-{
-    if(!left->gethasBeenExecuted())
-    {
-    left->execute();
-    }
-    if(left->getExecuted()) 
-    {
-        right->execute();
+        left->setExecuted(x);
     }
     else
     {
-        right->setExecuted(false);
-        //right->sethasBeenExecuted(true);
+        right->setExecuted(x);
     }
 }
 
-void And::multihasBeenExecuted(bool a, bool b)
+void And::execute(int x) 
 {
-    left->sethasBeenExecuted(a);
-    right->sethasBeenExecuted(b);
+    if(!left->gethasBeenExecuted() && x == 0)
+    {
+        left->execute(x);
+    }
+    else if (!right->gethasBeenExecuted() && x == 1 && left->getExecuted())
+    {
+        right->execute(x);
+    }
+    exit(0);
+}
+bool And::isOr() 
+{
+    return false;
 }
 
-void And::multiExecuted()
+bool And::isAnd() 
 {
-    if(!left->getExecuted()) {
-        right->setExecuted(false);
+    return true;
+}
+
+void And::setChildBeenExecuted(bool x, int y)
+{
+    if (y == 0)
+    {
+        left->sethasBeenExecuted(x);
+    }
+    else
+    {
+        right->sethasBeenExecuted(x);
     }
 }
 
-void Comment::execute()
+void And::setChildExecuted(bool x, int y)
 {
+    if (y == 0)
+    {
+        left->setExecuted(x);
+    }
+    else
+    {
+        right->setExecuted(x);
+    }
+}
+
+bool Comment::isOr() 
+{
+    return false;
+}
+
+bool Comment::isAnd() 
+{
+    return false;
+}
+
+void Comment::setChildBeenExecuted(bool x, int y)
+{ if (x) { ++y; } }
+
+void Comment::setChildExecuted(bool x, int y)
+{ if (x) { ++y; } }
+
+void Comment::execute(int x)
+{
+    ++x;
     child->setArguement("");
-    child->execute();
 }
 
-void Comment::multihasBeenExecuted(bool a, bool b)
-{ a = b; b = a; }
-
-void Comment::multiExecuted()
-{ }
-
-void Executable::execute()
+bool Executable::isOr() 
 {
+    return false;
+}
+
+bool Executable::isAnd() 
+{
+    return false;
+}
+
+void Executable::execute(int x)
+{
+    ++x;
     string temp1 = this->getArguement();
     vector<string> mytok;
     char_separator<char> space(" ");
     tokenizer<char_separator<char> > toks(temp1, space);
-    //cout << temp1 << endl;
     for (tokenizer<char_separator<char> >::iterator it = toks.begin(); it 
         != toks.end(); it++)
 	{
 		mytok.push_back(*it);
 	}
     char** temp = new char*[mytok.size() + 1];
-    for (unsigned i = 0; i < mytok.size(); ++i) {
+    unsigned i = 0;
+    for (; i < mytok.size(); ++i) {
         temp[i] = new char[mytok.at(i).size()];
         strcpy(temp[i], mytok.at(i).c_str());
     }
+    temp[i] = NULL;
     if (!this->gethasBeenExecuted())
     {
         if (execvp(temp[0], temp) == -1) {
             perror("execvp");
-            this->setExecuted(false);
-            exit(1);
+            abort();
         }
     }
 }
 
-void Executable::multihasBeenExecuted(bool a, bool b)
-{ a = b; b = a; }
+void Executable::setChildBeenExecuted(bool x, int y)
+{ if (x) { ++y; } }
 
-void Executable::multiExecuted()
-{ }
+void Executable::setChildExecuted(bool x, int y)
+{ if (x) { ++y; } }

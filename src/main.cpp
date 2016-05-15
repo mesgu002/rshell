@@ -19,25 +19,26 @@ void parse(string s, vector<string> &x)
     }
 }
 
-void parseConnectors(vector<string> x, vector<string> &y)                   //split up parsed strings
-{
+void parseConnectors(vector<string> x, vector<string> &y)
+{                                                   //split up parsed strings
     typedef tokenizer<char_separator<char> > tokenizer;
-    char_separator<char> sep("", "|&");                                     //splits at | and &
+    char_separator<char> sep("", "|&");             //splits at | and &
     for (unsigned i = 0; i < x.size(); i++)
     {
         tokenizer tokens(x.at(i), sep);                                                                 
         for (tokenizer::iterator tok_iter = tokens.begin(); tok_iter != 
             tokens.end(); ++tok_iter)       
-        {
-            y.push_back(*tok_iter);                                         //pushes back on new vector of strings
+        {                                   //pushes back on new 
+            y.push_back(*tok_iter);         //vector of strings        
         }
     }
 }
 
-bool callingExecute(vector<Base *> x, bool counter, unsigned location) 
+void callingExecute(vector<Base *> x, unsigned location, int child) 
 {
-    if (location == x.size() - 1) {
-        return true;
+    if (location >= x.size() - 1)
+    {
+        return;
     }
     int status = 0;
     int pid = fork();
@@ -47,7 +48,7 @@ bool callingExecute(vector<Base *> x, bool counter, unsigned location)
     }
     else if (pid == 0) //child
     {
-        x.at(location)->execute();
+        x.at(location)->execute(child);
     }
     else //parent
     {
@@ -57,35 +58,73 @@ bool callingExecute(vector<Base *> x, bool counter, unsigned location)
             wpid = waitpid(pid, &status, WUNTRACED);
         }
         while (wpid == -1 && errno == EINTR);
-        
+
         if (wpid == -1)
         {
             perror("Error with wait().");
         }
-        if (!counter)
+        if (WIFSIGNALED(status))
         {
-            x.at(location)->multihasBeenExecuted(true, false);
-            callingExecute(x, true, location);
+            x.at(location)->setChildExecuted(false, child);
+            // last call failed
+            if (x.at(location)->isOr())
+            {
+                x.at(location)->setChildBeenExecuted(true, child);
+                if(child == 0)
+                {
+                    callingExecute(x, location, 1); // run the other side
+                }
+                else
+                {
+                    callingExecute(x, ++location, 0);
+                }
+            }
+            else if(x.at(location)->isAnd())
+            {
+                x.at(location)->setChildBeenExecuted(true, child);
+                if (child == 0)
+                {
+                    x.at(location)->setChildExecuted(false, 1);
+                    x.at(location)->setChildBeenExecuted(true, 1);
+                }
+                callingExecute(x, ++location, 0); // run next command
+            }
+            else
+            {
+                callingExecute(x, ++location, 0);
+            }
         }
         else
         {
-            x.at(location)->multihasBeenExecuted(true, true);
-            x.at(location)->multiExecuted();
-            callingExecute(x, false, ++location);
+            if (x.at(location)->isOr())
+            {
+                x.at(location)->setChildBeenExecuted(true, child);
+                if (child == 0)
+                {
+                    x.at(location)->setChildExecuted(false, 1);
+                    x.at(location)->setChildBeenExecuted(true, 1);
+                }
+                callingExecute(x, ++location, 1);
+            }
+            else if (x.at(location)->isAnd())
+            {
+                x.at(location)->setChildBeenExecuted(true, child);
+                if (child == 0)
+                {
+                    callingExecute(x, location, 1);
+                }
+                else
+                {
+                    callingExecute(x, ++location, 0);
+                }
+            }
+            else
+            {
+                callingExecute(x, ++location, 0);
+            }
         }
     }
-    return true;
 }
-
-// ls -a; echo hello && echo world || echo hello world
-    //expect: ls -a
-    //        hello
-    //        world
-// echo hello || echo world && echo hello world
-    //expect: hello
-// ech hello || echo world && echo hello world
-    //expect: world
-    //        hello world
 
 int main() 
 {
@@ -111,6 +150,7 @@ int main()
         vector<string> tempString1;
         vector<string> parsedString;
         vector<Base *> commands;
+        
         while (command == "")
         {
             if (getlogin() != NULL)
@@ -146,6 +186,21 @@ int main()
     	            (parsedString.at(i).find(" "), 1 , "");
     	    }
     	}
+    	
+    	vector<Base* > test;
+    	
+    	for (unsigned i = 0; i < parsedString.size(); ++i)
+    	{
+    	    if (parsedString.at(i) != "|" && parsedString.at(i) != "&")
+    	    {
+    	        Executable* x = new Executable(parsedString.at(i), true, false);
+    	        test.push_back(x);
+    	    }
+    	    else
+    	    {
+    	        test.push_back(0);
+    	    }
+    	}
     	   
     	if (parsedString.size() == 1)
     	{
@@ -160,26 +215,27 @@ int main()
                 {
                     if (parsedString.at(i + 1) == "|")
                     {
-                        Executable* x = new Executable(parsedString.at(i - 1),
-                            true, false);
-                        Executable* y = new Executable(parsedString.at(i + 2),
-                            true, false);
-                        Or* cmd = new Or(x, y);
-                        cout << "TEST1" << endl;
+                        // Executable* x = new Executable(parsedString.at(i - 1),
+                        //     true, false);
+                        // Executable* y = new Executable(parsedString.at(i + 2),
+                        //     true, false);
+                        // Or* cmd = new Or(x, y);
+                        Or* cmd = new Or(test.at(i - 1), test.at(i + 2));
                         commands.push_back(cmd);
                         i += 2;
                     }
                 }
-                else if (parsedString.at(i) == "&" && i < parsedString.size() - 2)
+                else if (parsedString.at(i) == "&" && 
+                    i < parsedString.size() - 2)
                 {
                     if (parsedString.at(i + 1) == "&")
                     {
-                        Executable* x = new Executable(parsedString.at(i - 1),
-                            true, false);
-                        Executable* y = new Executable(parsedString.at(i + 2),
-                            true, false);
-                        And* cmd = new And(x, y);
-                        cout << "TEST2" << endl;
+                        // Executable* x = new Executable(parsedString.at(i - 1),
+                        //     true, false);
+                        // Executable* y = new Executable(parsedString.at(i + 2),
+                        //     true, false);
+                        // And* cmd = new And(x, y);
+                        And* cmd = new And(test.at(i - 1), test.at(i + 2));
                         commands.push_back(cmd);
                         i += 2;
                     }
@@ -192,17 +248,21 @@ int main()
                 {
                     if (i == 1)
                     {
-                        Executable* x = new Executable(parsedString.at(0), true, false);
+                        Executable* x = new Executable(parsedString.at(0), 
+                            true, false);
                         commands.push_back(x);
                     }
-                    Executable* x = new Executable(parsedString.at(i), true, false);
-                    cout << "TEST3" << endl;
+                    Executable* x = new Executable(parsedString.at(i), 
+                        true, false);
                     commands.push_back(x);
                 }
             }
         }
-        cout << commands.size() << endl;
-        break;
+        commands.push_back(NULL);
+
+        callingExecute(commands, 0, 0);
+
+        command = "";
     }
     return 0;
 }
