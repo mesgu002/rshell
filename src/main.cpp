@@ -188,8 +188,8 @@ int main()
             }
             if (comments != string::npos)
             {
-                tempString1.erase(tempString1.begin() + comments
-                    , tempString1.end());
+                tempString1.at(i).erase(tempString1.at(i).begin() + comments
+                    , tempString1.at(i).end());
             }
         }
         
