@@ -14,3 +14,4 @@ echo "# stuff; ls; mkdir folder2"
 echo
 
 echo hello#asfa && exit
+exit

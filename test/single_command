@@ -17,8 +17,6 @@ echo
 ls -l
 echo
 
-rmdir random
-echo
 
 ls -l
 echo

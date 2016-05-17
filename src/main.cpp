@@ -1,41 +1,83 @@
 #include "assn1.h"
 
 
-//parse the string s (user input) at ';' without interrupting quoted
-//arguements
-void parse(string s, vector<string> &x) 
+vector<string> parse(string command)
 {
-    string separator1("");//dont let quoted arguments escape themselves
-    string separator2(";");//split on semicolon
-    string separator3("\"");//let it have quoted arguments
-
-    escaped_list_separator<char> temp(separator1,separator2,separator3);
-    tokenizer<escaped_list_separator<char> > tok(s, temp);
-
-    for (tokenizer<escaped_list_separator<char> >::iterator beg=tok.begin(); 
-        beg!=tok.end();++beg)
+    
+    vector<string> fixedCommand;        //vector of parsed strings
+    string temp;                        //takes char one at a time from command
+    for (unsigned i = 0; i < command.size(); ++i)
     {
-        x.push_back(*beg);
-    }
-}
-
-
-//parse the strings at '|' and '&' and push_back onto another vector.
-void parseConnectors(vector<string> x, vector<string> &y)
-{                                                   //split up parsed strings
-    typedef tokenizer<char_separator<char> > tokenizer;
-    char_separator<char> sep("", "|&");             //splits at | and &
-    for (unsigned i = 0; i < x.size(); i++)
-    {
-        tokenizer tokens(x.at(i), sep);                                                                 
-        for (tokenizer::iterator tok_iter = tokens.begin(); tok_iter != 
-            tokens.end(); ++tok_iter)       
-        {                                   //pushes back on new 
-            y.push_back(*tok_iter);         //vector of strings        
+        if (command[i] == '"')          //check for quotes
+        {
+            ++i;
+            while(command[i] != '"')    //check for end quote
+            {
+                temp.push_back(command[i]); //push_back on temp each char in
+                ++i;                        //between the two quotes
+            }
+            if(!temp.empty())               //if command wasn't ""
+            {
+                fixedCommand.push_back(temp);
+                temp = "";
+            }
+            ++i;
         }
+        else if (command[i] == ';')     //check for ';'
+        {
+            if(!temp.empty())           //make sure command isn't ""
+            {
+                fixedCommand.push_back(temp);
+                temp = "";
+            }
+            ++i;
+        }
+        //Check for "|"
+        else if (command[i] == '|' && command[i + 1] == '|')
+        {
+            if(!temp.empty())           //make sure command isn't ""
+            {
+                fixedCommand.push_back(temp);
+                temp = "";
+            }
+            fixedCommand.push_back("|"); //push_back two '|' for constructors
+            fixedCommand.push_back("|"); //when assembling objects
+            ++i;
+            ++i;
+        }
+        //Check for "&"
+        else if (command[i] == '&' && command[i + 1] == '&')
+        {
+            if(!temp.empty())           //make sure command isn't ""
+            {
+                fixedCommand.push_back(temp);
+                temp = "";
+            }
+            fixedCommand.push_back("&"); //push_back two '&' for constructors
+            fixedCommand.push_back("&"); //when assembling objects
+            ++i;
+            ++i;
+        }
+        else if (command[i] == '#')     //Check for '#'
+        {
+            if (!temp.empty())          //make sure command isn't ""
+            {
+                fixedCommand.push_back(temp);
+                return fixedCommand;    //return because everything after is
+            }                           //a comment
+            return fixedCommand;
+        }
+        else
+        {
+            temp.push_back(command[i]); //Not a connector so is part of a
+        }                               //command that shouldn't be split
     }
+    if(!temp.empty())                   //make sure command isn't ""
+    {
+        fixedCommand.push_back(temp);
+    }
+    return fixedCommand;                //return parsed strings
 }
-
 
 //Use the syscalls fork, waitpid, and execvp to execute the commands
 //recursively
@@ -149,7 +191,6 @@ int main()
 {
     string command;     //Used for user input
     size_t find;        //Find if there is an exit ('exit') in 'command'
-    size_t comments;    //Find if there is a comment ('#') in 'command' 
     string login;       //Get the login name of the user
     if (getlogin() == NULL)
     {
@@ -167,7 +208,6 @@ int main()
     }
     while (true)                        //Loop until exit called
     {
-        vector<string> tempString1;     //Store strings after paring ';'
         vector<string> parsedString;    //Store strings after parsing '|,&'
         vector<Base *> commands;        //Store Base* from each 'parsedString'
         
@@ -181,29 +221,19 @@ int main()
             getline(cin, command);      //Get user input
         }
         
-        parse(command, tempString1);    //Parse at ';'
+        parsedString = parse(command);    //Parse at ';|&'
         
-        //This loop will check for "exit" and "#" from the user's input
+        //This loop will check for "exit" from the user's input
         //If "exit" is found the program will terminate
-        //If "#" is found then everything after the # will be removed from
-            //tempString1
-        for (unsigned i = 0; i < tempString1.size(); i++) 
+        for (unsigned i = 0; i < parsedString.size(); i++) 
         {
-            find = tempString1.at(i).find("exit");
-            comments = tempString1.at(i).find("#");
+            find = parsedString.at(i).find("exit");
             if (find != string::npos)
             {
                 cout << "Goodbye!" << endl;
                 exit(0);
             }
-            if (comments != string::npos)
-            {
-                tempString1.at(i).erase(tempString1.at(i).begin() + comments
-                    , tempString1.at(i).end());
-            }
         }
-        
-        parseConnectors(tempString1, parsedString); //Parse at connectors('|&')
         
         //Check to make sure first char isnt ' ' and remove it if it is
         vector<string> mytok;
