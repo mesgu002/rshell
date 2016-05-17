@@ -69,3 +69,4 @@ Version 3, 29 June 2007
 2. Can't execute commands on the same line exit() is called
 3. Can't change user passwords using pwd
 4. Doesn't color text like bash
+5. rshell can't handle if exit is the first command
