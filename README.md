@@ -4,7 +4,10 @@
 
 A **c++** implementation of **shell**
 ##Authors and Contributors
-Glenn Cochran and Montana Esguerra
+
+	Glenn Cochran [Glenn's github](https://github.com/gcoch001)
+	
+	Montana Esguerra [Montana's github](https://github.com/mesgu002)
 ---
 
 ##To Run rshell:
