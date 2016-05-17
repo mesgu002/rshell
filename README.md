@@ -5,9 +5,10 @@
 A **c++** implementation of **shell**
 Authors
 ------------
-Glenn Cochran 
-Montana Esguerra 
-Lam Duy Le (aka Patrick Le): https://github.com/lepatrick714
+[Glenn Cochran](https://github.com/gcoch001)
+
+[Montana Esguerra](https://github.com/mesgu002)
+
 
 
 ##To Run rshell:
