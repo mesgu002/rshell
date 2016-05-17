@@ -5,9 +5,9 @@
 A **c++** implementation of **shell**
 ##Authors and Contributors
 
-	Glenn Cochran [Glenn's github](https://github.com/gcoch001)
+	Glenn Cochran [Glenn's github](https://www.github.com/gcoch001)
 	
-	Montana Esguerra [Montana's github](https://github.com/mesgu002)
+	Montana Esguerra [Montana's github](https://www.github.com/mesgu002)
 ---
 
 ##To Run rshell:
