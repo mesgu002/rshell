@@ -7,7 +7,8 @@ Authors
 ------------
 [Glenn Cochran](https://github.com/gcoch001 "Loves long distance running")
 
-[Montana Esguerra](https://github.com/mesgu002 "Enjoys walks on the beach")
+[Montana Esguerra](https://github.com/mesgu002 "Enjoys long walks on the beach")
+
 
 
 
