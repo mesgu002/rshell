@@ -3,7 +3,8 @@
 ![rshell](/img/rshellLogo.png) 
 
 A **c++** implementation of **shell**
-##Authors and Contributors
+Authors
+------------
 
 	Glenn Cochran 
 	Montana Esguerra 
