@@ -5,9 +5,9 @@
 A **c++** implementation of **shell**
 Authors
 ------------
-[Glenn Cochran](https://github.com/gcoch001)
+[Glenn Cochran](https://github.com/gcoch001 "Loves long distance running")
 
-[Montana Esguerra](https://github.com/mesgu002)
+[Montana Esguerra](https://github.com/mesgu002 "Enjoys walks on the beach")
 
 
 
