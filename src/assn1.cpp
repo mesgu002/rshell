@@ -36,7 +36,7 @@ string Base::getArguement()
 void Or::execute(int x) 
 {
     //Check to see if left has been executed yet and if x is 0
-    if(!left->gethasBeenExecuted() && x == 0)
+    if (!left->gethasBeenExecuted() && x == 0)
     {
         left->execute(x);
     }
@@ -86,7 +86,7 @@ void Or::setChildExecuted(bool x, int y)
 void And::execute(int x) 
 {
     //Check to see if left has been executed yet and if x is 0
-    if(!left->gethasBeenExecuted() && x == 0)
+    if (!left->gethasBeenExecuted() && x == 0)
     {
         left->execute(x);
     }

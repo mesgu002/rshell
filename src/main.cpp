@@ -1,6 +1,5 @@
 #include "assn1.h"
 
-
 vector<string> parse(string command)
 {
     
@@ -11,12 +10,12 @@ vector<string> parse(string command)
         if (command[i] == '"')          //check for quotes
         {
             ++i;
-            while(command[i] != '"')    //check for end quote
+            while (command[i] != '"')    //check for end quote
             {
                 temp.push_back(command[i]); //push_back on temp each char in
                 ++i;                        //between the two quotes
             }
-            if(!temp.empty())               //if command wasn't ""
+            if (!temp.empty())               //if command wasn't ""
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -25,7 +24,7 @@ vector<string> parse(string command)
         }
         else if (command[i] == ';')     //check for ';'
         {
-            if(!temp.empty())           //make sure command isn't ""
+            if (!temp.empty())           //make sure command isn't ""
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -35,7 +34,7 @@ vector<string> parse(string command)
         //Check for "|"
         else if (command[i] == '|' && command[i + 1] == '|')
         {
-            if(!temp.empty())           //make sure command isn't ""
+            if (!temp.empty())           //make sure command isn't ""
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -48,7 +47,7 @@ vector<string> parse(string command)
         //Check for "&"
         else if (command[i] == '&' && command[i + 1] == '&')
         {
-            if(!temp.empty())           //make sure command isn't ""
+            if (!temp.empty())           //make sure command isn't ""
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -72,7 +71,7 @@ vector<string> parse(string command)
             temp.push_back(command[i]); //Not a connector so is part of a
         }                               //command that shouldn't be split
     }
-    if(!temp.empty())                   //make sure command isn't ""
+    if (!temp.empty())                   //make sure command isn't ""
     {
         fixedCommand.push_back(temp);
     }
@@ -123,7 +122,7 @@ void callingExecute(vector<Base *> x, unsigned location, int child)
             {
                 //Set node was executed
                 x.at(location)->setChildBeenExecuted(true, child);
-                if(child == 0) //If on left node currently
+                if (child == 0) //If on left node currently
                 {
                     callingExecute(x, location, 1); //Run the right node
                 }
@@ -132,7 +131,7 @@ void callingExecute(vector<Base *> x, unsigned location, int child)
                     callingExecute(x, ++location, 0); //Run next command
                 }
             }
-            else if(x.at(location)->isAnd())    //Check to see if And objects
+            else if (x.at(location)->isAnd())    //Check to see if And objects
             {
                 //Set node was executed
                 x.at(location)->setChildBeenExecuted(true, child);
