@@ -19,7 +19,7 @@ Enter these commands in the following order:
 3. make
 4. ./bin/rshell
 ```
-You are now ready to use rshell!
+You are now ready to use **rshell**
 
 ##How it works:
 rshell takes in commands on one line and executes them from left to right.  
