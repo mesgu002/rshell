@@ -81,59 +81,65 @@ void callingExecute(vector<Base *> x, unsigned location, int child)
             {
                 //Set node was executed
                 x.at(location)->setChildBeenExecuted(true, child);
-                if(child == 0)
+                if(child == 0) //If on left node currently
                 {
                     callingExecute(x, location, 1); //Run the right node
                 }
-                else
+                else    //If on right node currently
                 {
                     callingExecute(x, ++location, 0); //Run next command
                 }
             }
             else if(x.at(location)->isAnd())    //Check to see if And objects
             {
-                x.at(location)->setChildBeenExecuted(true, child); //Set node
-                if (child == 0)                     //was executed
+                //Set node was executed
+                x.at(location)->setChildBeenExecuted(true, child);
+                if (child == 0) //If on left node currently
                 {
-                    //Set right node didn't succeed, but was  
+                    //Set right node didn't succeed, but was executed
                     x.at(location)->setChildExecuted(false, 1);
                     x.at(location)->setChildBeenExecuted(true, 1);
                 }
-                callingExecute(x, ++location, 0); // run next command
+                //If on right node currently
+                callingExecute(x, ++location, 0); // Run next command
             }
-            else
+            else //If executable object
             {
-                callingExecute(x, ++location, 0);
+                callingExecute(x, ++location, 0); // Run next command
             }
         }
         
         else                                        //execvp() executed
         {                                           //correctly
-            if (x.at(location)->isOr())
+            if (x.at(location)->isOr())         //Check to see if Or objects
             {
+                //Set node was executed
                 x.at(location)->setChildBeenExecuted(true, child);
-                if (child == 0)
+                if (child == 0) //If on left node currently
                 {
+                    //Set right node didn't succeed, but was executed
                     x.at(location)->setChildExecuted(false, 1);
                     x.at(location)->setChildBeenExecuted(true, 1);
                 }
-                callingExecute(x, ++location, 1);
+                //If on right node currently
+                callingExecute(x, ++location, 1); //Run next command
             }
-            else if (x.at(location)->isAnd())
+            else if (x.at(location)->isAnd())   //Check to see if And objects
             {
+                //Set node was executed
                 x.at(location)->setChildBeenExecuted(true, child);
-                if (child == 0)
+                if (child == 0) //If on left node currently
                 {
-                    callingExecute(x, location, 1);
+                    callingExecute(x, location, 1); //Run right node
                 }
-                else
+                else //If on right node currently
                 {
-                    callingExecute(x, ++location, 0);
+                    callingExecute(x, ++location, 0); //Run next command
                 }
             }
-            else
+            else    //If executable object
             {
-                callingExecute(x, ++location, 0);
+                callingExecute(x, ++location, 0);   //Run next command
             }
         }
     }
@@ -141,42 +147,46 @@ void callingExecute(vector<Base *> x, unsigned location, int child)
 
 int main() 
 {
-    string command;
-    size_t find;
-    size_t comments;
-    string login;
+    string command;     //Used for user input
+    size_t find;        //Find if there is an exit ('exit') in 'command'
+    size_t comments;    //Find if there is a comment ('#') in 'command' 
+    string login;       //Get the login name of the user
     if (getlogin() == NULL)
     {
         login = "";
-        perror("get login failed");
+        perror("get login failed"); //getlogin() failed
     }
     else
     {
-        login = getlogin();
+        login = getlogin();         //getlogin() success
     }
-    char host[100];
+    char host[100];                     //Get the user's hostname
     if (gethostname(host, 100) == -1)
     {
-        perror("get host name failed");
+        perror("get host name failed"); //gethostname() failed
     }
-    while (true)
+    while (true)                        //Loop until exit called
     {
-        vector<string> tempString1;
-        vector<string> parsedString;
-        vector<Base *> commands;
+        vector<string> tempString1;     //Store strings after paring ';'
+        vector<string> parsedString;    //Store strings after parsing '|,&'
+        vector<Base *> commands;        //Store Base* from each 'parsedString'
         
-        while (command == "")
+        while (command == "")           //Reloop if user types empty string
         {
-            if (getlogin() != NULL)
+            if (getlogin() != NULL)     //Just display "$ " if getlogin() failed
             {
                 cout << login << "@" << host;
             }
             cout << "$ ";
-            getline(cin, command);    
+            getline(cin, command);      //Get user input
         }
         
-        parse(command, tempString1);
+        parse(command, tempString1);    //Parse at ';'
         
+        //This loop will check for "exit" and "#" from the user's input
+        //If "exit" is found the program will terminate
+        //If "#" is found then everything after the # will be removed from
+            //tempString1
         for (unsigned i = 0; i < tempString1.size(); i++) 
         {
             find = tempString1.at(i).find("exit");
@@ -193,9 +203,10 @@ int main()
             }
         }
         
-        parseConnectors(tempString1, parsedString); //parses at connectors
+        parseConnectors(tempString1, parsedString); //Parse at connectors('|&')
         
-        vector<string> mytok;       //check to make sure first char isnt ' '
+        //Check to make sure first char isnt ' ' and remove it if it is
+        vector<string> mytok;
     	char_separator<char> space(" ");
     	for (unsigned i = 0; i < parsedString.size(); ++i)
     	{
@@ -207,53 +218,64 @@ int main()
     	    }
     	}
     	
-    	vector<Base* > test;
+    	vector<Base* > createExecs;
     	
+    	//Creates the new executables all at the same time so the executable's
+    	//data will be shared even when used for two different connector pointer
+    	//constructors
     	for (unsigned i = 0; i < parsedString.size(); ++i)
     	{
     	    if (parsedString.at(i) != "|" && parsedString.at(i) != "&")
     	    {
     	        Executable* x = new Executable(parsedString.at(i), true, false);
-    	        test.push_back(x);
+    	        createExecs.push_back(x);
     	    }
     	    else
     	    {
-    	        test.push_back(0);
+    	        createExecs.push_back(0);
     	    }
     	}
     	   
+    	//Checks to see if only a single command was inputed
     	if (parsedString.size() == 1)
     	{
+    	    //Creates new Executable
     	    Executable* x = new Executable(parsedString.at(0), true, false);
     	    commands.push_back(x);
     	}
+    	//Multiple commands
     	else
     	{
             for (unsigned i = 1; i < parsedString.size(); ++i)
             {
+                //If the next 2 locations are "|" connectors and i doesn't go
+                //out of bounds, creates new Or object with the 2 commands
+                //before and after the '|' locations
                 if (parsedString.at(i) == "|" && i < parsedString.size() - 2)
                 {
                     if (parsedString.at(i + 1) == "|")
                     {
-                        Or* cmd = new Or(test.at(i - 1), test.at(i + 2));
+                        Or* cmd = new Or(createExecs.at(i - 1), 
+                            createExecs.at(i + 2));
                         commands.push_back(cmd);
                         i += 2;
                     }
                 }
+                //If the next 2 locations are "&" connectors and i doesn't go
+                //out of bounds, creates new And object with the 2 commands
+                //before and after the '&' locations
                 else if (parsedString.at(i) == "&" && 
                     i < parsedString.size() - 2)
                 {
                     if (parsedString.at(i + 1) == "&")
                     {
-                        And* cmd = new And(test.at(i - 1), test.at(i + 2));
+                        And* cmd = new And(createExecs.at(i - 1), 
+                            createExecs.at(i + 2));
                         commands.push_back(cmd);
                         i += 2;
                     }
                 }
-                else if (parsedString.at(i) == "#")
-                {
-                    break;
-                }
+                //If the command doesn't have a connector associated with it
                 else
                 {
                     if (i == 1)
@@ -268,11 +290,14 @@ int main()
                 }
             }
         }
-        commands.push_back(NULL);
+        commands.push_back(NULL);       //push back 'NULL' in order for 
+                                        //execvp() to work
 
-        callingExecute(commands, 0, 0);
+        callingExecute(commands, 0, 0); //Recursive function to execute
+                                        //all the commands
 
-        command = "";
+        command = "";                   //user input changed to empty string
+                                        //for the loop to get user input
     }
     return 0;
 }

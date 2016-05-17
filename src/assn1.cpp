@@ -32,13 +32,16 @@ string Base::getArguement()
         
 void Or::execute(int x) 
 {
+    //Check to see if left has been executed yet and if x is 0
     if(!left->gethasBeenExecuted() && x == 0)
     {
         left->execute(x);
     }
+    //Check to see if right has been executed yet, if x is 1 and if left
+    //didn't execute correctly
     else if (!right->gethasBeenExecuted() && x == 1 && !left->getExecuted())
     {
-        right->execute(x);    
+        right->execute(x);
     }
     exit(0);
 }
@@ -79,10 +82,13 @@ void Or::setChildExecuted(bool x, int y)
 
 void And::execute(int x) 
 {
+    //Check to see if left has been executed yet and if x is 0
     if(!left->gethasBeenExecuted() && x == 0)
     {
         left->execute(x);
     }
+    //Check to see if right has been executed yet, if x is 1 and if left
+    //execute correctly
     else if (!right->gethasBeenExecuted() && x == 1 && left->getExecuted())
     {
         right->execute(x);
@@ -134,12 +140,6 @@ bool Comment::isAnd()
     return false;
 }
 
-void Comment::setChildBeenExecuted(bool x, int y)
-{ if (x) { ++y; } }
-
-void Comment::setChildExecuted(bool x, int y)
-{ if (x) { ++y; } }
-
 void Comment::execute(int x)
 {
     ++x;
@@ -160,6 +160,8 @@ void Executable::execute(int x)
 {
     ++x;
     string temp1 = this->getArguement();
+    
+    //tokenize the string at spaces
     vector<string> mytok;
     char_separator<char> space(" ");
     tokenizer<char_separator<char> > toks(temp1, space);
@@ -168,24 +170,32 @@ void Executable::execute(int x)
 	{
 		mytok.push_back(*it);
 	}
-    char** temp = new char*[mytok.size() + 1];
+	
+    char** temp = new char*[mytok.size() + 1];  //convert tokens to Char**
     unsigned i = 0;
     for (; i < mytok.size(); ++i) {
         temp[i] = new char[mytok.at(i).size()];
-        strcpy(temp[i], mytok.at(i).c_str());
+        strcpy(temp[i], mytok.at(i).c_str());   //copy tokens to Char**
     }
     temp[i] = NULL;
-    if (!this->gethasBeenExecuted())
-    {
+    if (!this->gethasBeenExecuted())            //check to see if 'this' hasn't
+    {                                           //been executed
         if (execvp(temp[0], temp) == -1) {
-            perror("execvp");
-            abort();
+            perror("execvp");                   //execvp() failed
+            abort();                            //trigger WIFSIGNALED
         }
     }
 }
 
+//These functions aren't needed/don't do anything
 void Executable::setChildBeenExecuted(bool x, int y)
 { if (x) { ++y; } }
 
 void Executable::setChildExecuted(bool x, int y)
+{ if (x) { ++y; } }
+
+void Comment::setChildBeenExecuted(bool x, int y)
+{ if (x) { ++y; } }
+
+void Comment::setChildExecuted(bool x, int y)
 { if (x) { ++y; } }
