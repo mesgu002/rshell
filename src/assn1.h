@@ -10,7 +10,9 @@
 #include <cerrno>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <boost/tokenizer.hpp>
 
+using namespace boost;
 using namespace std;
 
 class Base 
