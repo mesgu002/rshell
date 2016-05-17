@@ -1,12 +1,11 @@
+echo
+echo "Beginning Multi Command test.."
 
-echo hello && echo world && echo "//&&||can##@I//\\have^%@!an@#*&^%A()@#:*please"
+echo hello && echo world && echo fubar
+ls - a && echo hello
+asdfl || echo "asdfl did not print"
 
-echo hello || echo world || echo how are you
+echo "combination of || and &&" || echo "this shouldn't run" && "this should run"
+echo
 
-ls -a ; echo hello && echo world; echo hello || echo world; mkdir newFolder
-
-echo "\;" ; echo "\;" && echo "\; \; \;" 
-
-ls -l && ls -a || echo "yeah, that just happened"
-
-cout << "Hello World" << endl;
+echo "Exiting now.." && exit

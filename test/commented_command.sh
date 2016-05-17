@@ -1,4 +1,3 @@
 #!/bin/bash
 
-./bin/rshell <<< 'ls # -a '
-
+../bin/rshell < commented_command

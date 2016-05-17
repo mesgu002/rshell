@@ -1,12 +1,30 @@
+echo
+echo "testing single commands"
+echo
+
+ls
+echo
+
 ls -a
+echo
 
-echo hello
+pwd
+echo
 
-echo hello world
+mkdir random
+echo
 
-echo hello                                                                   world
-echo "///&& || He||o W&orLd////&&#||"
-echo "echo echo echo echo"
-echo " \" \" "
-echo " \\\\\\&& || ;\\//\\//Can||##have@@##an^^A Please :D :D"
-echo \\\eoriueirblah\"erieu
+ls -l
+echo
+
+rmdir random
+echo
+
+ls -l
+echo
+
+echo "Hello World && \\ ; "
+
+
+echo "Exiting now..."
+exit
