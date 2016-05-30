@@ -1,0 +1,10 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include "../header/Command.h"
+using namespace std;
+
+Command :: Command() {
+}

@@ -1,0 +1,29 @@
+#include <iostream>
+#include <unistd.h>
+#include "../header/BinCommand.h"
+#include "../header/Exit.h"
+#include "../header/Connector.h"
+#include "../header/LogicalAnd.h"
+#include "../header/LogicalOr.h"
+#include "../header/SemiColon.h"
+#include "../header/Parser.h"
+#include "../header/Test.h"
+using namespace std;
+
+int main() {
+	//Create a new Parser object and output host name.
+	Parser* parser = new Parser();
+	string username = getlogin();
+	char hostname[50];
+	gethostname(hostname, sizeof hostname);
+	string line;
+	bool previous  = true;
+	//Run until the user inputs an exit command.
+	while(true) {
+		cout<<username<<"@"<<hostname<<"$ ";
+		getline(cin, line);
+		parser->parse(line, previous);
+	}
+
+	return 0;
+}

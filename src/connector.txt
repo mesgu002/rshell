@@ -1,0 +1,41 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include "../header/Connector.h"
+using namespace std;
+
+Connector :: Connector() {
+}
+
+Connector :: ~Connector() {
+}
+/*Default run behaviour that identifies the command
+	as either a test, parenthesis, or bin command
+	and runs the command accordingly.*/
+void Connector :: run(bool &previous, vector<string> &commands) {
+	string t = "[";
+    string tend = "]";
+    string test = "test";
+	string p = "(";
+    string pend = ")";
+	 if(!commands.empty()) {
+	        if(commands.at(0) == t || commands.at(0) == test) {
+				commands.erase(commands.begin());
+				if(commands.at(commands.size() - 1) == tend) {
+					commands.erase(commands.begin() + commands.size() - 1);
+				}
+				command = new Test();
+			} else if(commands.at(0) == p) {
+				commands.erase(commands.begin());
+				if(commands.at(commands.size() - 1) == pend) {
+					commands.erase(commands.begin() + commands.size() - 1);
+				}
+				command = new Parenthesis();
+			} else {
+				command = new BinCommand();
+			}
+			command->run(previous, commands);
+		}
+}

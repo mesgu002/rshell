@@ -1,0 +1,26 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include "../header/Connector.h"
+#include "../header/SemiColon.h"
+using namespace std;
+
+SemiColon :: SemiColon() : Connector() {
+}
+
+SemiColon :: ~SemiColon() {
+}
+
+/*Runs the command in commands. */
+void SemiColon :: run(bool &previous, vector<string> &commands) {
+	//If the command is exit, exit. If it's not exit, run a BinCommand.
+	string ext = "exit";
+	if (commands.at(0) == ext) {
+		this->command = new Exit();
+		this->command->run(previous, commands);
+	}
+
+	Connector::run(previous, commands);
+}

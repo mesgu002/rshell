@@ -1,0 +1,16 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include "../header/Command.h"
+#include "../header/Exit.h"
+using namespace std;
+
+Exit :: Exit() {
+}
+
+/*Exit the program.*/
+void Exit :: run(bool &previous, vector<string> &commands) {
+	exit(0);
+}

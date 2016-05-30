@@ -1,0 +1,29 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include "../header/Connector.h"
+#include "../header/LogicalOr.h"
+using namespace std;
+
+LogicalOr :: LogicalOr() : Connector() {
+}
+
+LogicalOr :: ~LogicalOr() {
+}
+/*Runs the command indicated in commands if previous is true. */
+void LogicalOr :: run(bool &previous, vector<string> &commands) {
+	//If previous is true, the command does not run. If previous is false, exit or a BinCommand runs.
+	string exit = "exit";
+	if (previous) {
+		previous = true;
+	}
+	else if (commands.at(0) == "exit") {
+		this->command = new Exit();
+		this->command->run(previous, commands);
+	}
+	else {
+			Connector::run(previous, commands);
+	}
+}

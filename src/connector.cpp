@@ -1,17 +1,26 @@
+#ifndef CONNECTOR_CPP
+#define CONNECTOR_CPP
+
 #include "../header/connector.h"
+#include <cstdlib>
+#include <iostream>
 
 using namespace std;
 
-connector :: connector (base* lhs, base* rhs)
+Connector :: Connector (Base* lhs, Base* rhs)
 {
 	left = lhs;
 	right = rhs;
 }
 
-connector :: connector ()
+Connector :: Connector ()
 {
 	left = NULL;
-	right = NULL:
+	right = NULL;
+}
+
+bool Connector :: execute()
+{
 }
 
 #endif

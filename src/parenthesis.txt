@@ -1,0 +1,10 @@
+#include "../header/Parenthesis.h"
+
+using namespace std;
+
+Parenthesis :: Parenthesis() { }
+/*Runs the inside of the parenthesis for order of precedence functionality.*/
+void Parenthesis :: run(bool &previous, vector<string> &commands) {
+	parser = new Parser();
+	parser->parse(commands.at(0), previous);
+}

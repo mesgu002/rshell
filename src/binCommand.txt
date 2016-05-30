@@ -1,0 +1,78 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include "../header/Command.h"
+#include "../header/BinCommand.h"
+using namespace std;
+
+BinCommand :: BinCommand() { }
+
+/*Runs a command from the bin/ using execvp(). Fork() is used for multithreading and waitpid() is used to wait for the child process to terminate before returning to the parent process.*/
+void BinCommand :: run(bool &previous, vector<string> &commands) {
+	//If the command is exit, exit the program.
+	string ext = "exit";
+    if (commands.at(0) == ext) {
+        exit(0);
+    }
+
+	//Remove extra '"' at the beginning and end of the parameters in commands.
+	char quote = '"';
+	for (unsigned i = 1; i < commands.size(); ++i) {
+		string::iterator it = commands.at(i).begin();
+        string::iterator it_end = commands.at(i).end();
+        --it_end;
+
+		if (*it == quote && *it_end == quote && commands.at(i).size() != 1) {
+			commands.at(i).erase(it);
+			it = --commands.at(i).end();
+			commands.at(i).erase(it);
+		}
+	}
+
+	//Convert commands into a cstring array.
+	vector<char*> argv;
+	argv.resize(commands.size() + 1);
+	for (size_t i = 0; i != commands.size(); ++i) {
+		argv[i] = &commands[i][0];
+	}
+
+	//Fork() and run execvp(). The parent process waits for the child process to finish.
+    pid_t pid = fork();
+    if (pid == -1) {
+        //fork failed to execute
+        perror("Failed to fork");
+        exit(1);
+    }
+    if (pid == 0) {
+        // child process
+        if (execvp(argv[0], argv.data()) == -1) {
+            //failed to execute
+            perror("Failed to execvp");
+            previous = false;
+            exit(1);
+        }
+    }
+    if (pid > 0) {
+        // parent process
+        int status;
+        waitpid(pid, &status, 0);
+
+        if (status > 0) {   // Detects when execvp does run a command but
+                            // the command is invalid
+            previous = false;
+        }
+        else if (WEXITSTATUS(status) == 0) {
+            previous = true;
+        }
+        else if (WEXITSTATUS(status) == 1) {
+            previous = false;
+        }
+    }
+}

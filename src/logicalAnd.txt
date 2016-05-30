@@ -1,0 +1,33 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include "../header/Connector.h"
+#include "../header/LogicalAnd.h"
+using namespace std;
+
+LogicalAnd :: LogicalAnd() : Connector() {
+}
+
+LogicalAnd :: ~LogicalAnd() {
+	if (command != NULL) {
+		command = NULL;
+	}
+}
+
+/*Run the command commands if previous is true.*/
+void LogicalAnd :: run(bool &previous, vector<string> &commands) {
+	string exit = "exit";
+	//The command does not run if previous is false and exits or runs a BinCommand as indicated in commands
+	if (!previous) {
+		previous = false;
+	}
+	else if (commands.at(0) == exit) {
+		this->command = new Exit();
+		this->command->run(previous, commands);
+	}
+	else {
+		Connector::run(previous, commands);
+	}
+}

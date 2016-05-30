@@ -1,0 +1,95 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstring>
+#include <cstdlib>
+//#include "../header/Command.h"
+#include "../header/Test.h"
+using namespace std;
+
+Test :: Test() { }
+
+void Test :: run(bool &previous, vector<string> &commands) {
+
+    int status;         // Variable for holding existence value
+    struct stat buf;    // Temp struct used to recieve data from stat
+
+    if (commands.size() >= 3) {
+        cout << "Error: Too Many Arguments" << endl;
+        previous = false;
+        return;
+    } if (!commands.size()) {
+        cout << "Error: No argument" << endl;
+		previous = false;
+		return;
+	}
+
+    /// Calling stat function and correctly assigning our bool
+    /// to work with other connectors and printing existence
+    status = stat(commands.at(commands.size() - 1).c_str(), &buf);
+    switch (status) {
+        case 0:
+            previous = true;
+        break;
+
+        case -1:
+            cout << "(False)" << endl;
+            previous = false;
+        break;
+
+        default:
+            cout << "Error: In Stat Function" << endl;
+        break;
+    }
+
+    /// Ideally by the time we get here there should only be one
+    /// flag (or none) inside our vector of strings, so we will
+    /// iterate through this to find the flag, an incorrect flag,
+    /// or the passed string and do its corresponding action
+    for (unsigned i = 0; i < commands.size() && previous == true; ++i) {
+
+        if (commands.at(i) == commands.at(commands.size() - 1)) {
+            cout << "(True)" << endl;
+            return;
+        }
+
+        else if (commands.at(i) == "-e") {
+            cout << "(True)" << endl;
+            return;
+        }
+
+        else if (commands.at(i) == "-f") {
+            if (S_ISREG(buf.st_mode)) {
+                cout << "(True)" << endl;
+            }
+            else {
+                previous = false;
+                cout << "(False)" << endl;
+            }
+            return;
+        }
+
+        else if (commands.at(i) == "-d") {
+            if (S_ISDIR(buf.st_mode)) {
+                cout << "(True)" << endl;
+            }
+            else {
+                previous = false;
+                cout << "(False)" << endl;
+            }
+            return;
+        }
+
+        else if (commands.at(i) != "-e" &&
+          commands.at(i) != "-d" &&
+          commands.at(i) != "-f" &&
+          commands.at(i) != commands.at(commands.size() -1 )) {
+            previous = false;
+            cout << "Error: Invalid Flag" << endl;
+            return;
+        }
+    }
+}
