@@ -2,16 +2,16 @@
 
 using namespace std;
 
-void Parser::parse(string command)
+void Parser::parse(string command, bool &previous)
 {
     
     vector<string> fixedCommand;        //vector of parsed strings
     string temp;                        //takes char one at a time from command
-    int checkQuotes = 0;
     for (unsigned i = 0; i < command.size(); ++i)
     {
         if (command[i] == '"')          //check for quotes
         {
+            int checkQuotes = 0;
             ++checkQuotes;
             unsigned j = i + 1;
             for (; j < command.size(); ++j)
@@ -21,18 +21,87 @@ void Parser::parse(string command)
                     --checkQuotes;
                     break;
                 }
-                else {
-                    
+            }
+            if (checkQuotes == 0)
+            {
+                temp.insert(0, command, i + 1, j - i - 1);
+                if (!temp.empty())               //if command wasn't ""
+                {
+                    fixedCommand.push_back(temp);
+                    temp = "";
+                }
+                i = j + 1;
+            }
+            else
+            {
+                cout << "Error: No matching quote" << endl;
+                exit(1);
+            }
+        }
+        else if (command[i] == '[')
+        {
+            int checkBrackets = 0;
+            ++checkBrackets;
+            unsigned j = i + 1;
+            for (; j < command.size(); ++j)
+            {
+                if (command.at(j) == ']')
+                {
+                    --checkBrackets;
+                    break;
                 }
             }
-            temp.insert(0, command, i + 1, j - i - 1);
-            if (!temp.empty())               //if command wasn't ""
+            if (checkBrackets == 0)
             {
-                fixedCommand.push_back(temp);
-                temp = "";
+                fixedCommand.push_back("[");
+                temp.insert(0, command, i + 1, j - i - 1);
+                if (!temp.empty())
+                {
+                    fixedCommand.push_back(temp);
+                    temp = "";
+                }
+                fixedCommand.push_back("]");
+                i = j + 1;
             }
-            i = j + 1;
+            else
+            {
+                cout << "Error: No matching bracket" << endl;
+                exit(1);
+            }
         }
+        
+        else if (command[i] == '(')
+        {
+            int checkParen = 0;
+            ++checkParen;
+            unsigned j = i + 1;
+            for (; j < command.size(); ++j)
+            {
+                if (command.at(j) == ')')
+                {
+                    --checkParen;
+                    break;
+                }
+            }
+            if (checkParen == 0)
+            {
+                fixedCommand.push_back("(");
+                temp.insert(0, command, i + 1, j - i - 1);
+                if (!temp.empty())
+                {
+                    fixedCommand.push_back(temp);
+                    temp = "";
+                }
+                fixedCommand.push_back(")");
+                i = j + 1;
+            }
+            else
+            {
+                cout << "Error: No matching parenthesis" << endl;
+                exit(1);
+            }
+        }
+        
         else if (command[i] == ';')     //check for ';'
         {
             if (!temp.empty())           //make sure command isn't ""
@@ -83,10 +152,62 @@ void Parser::parse(string command)
     }
     
     vector<Base* > execute;
-    bool previous = true;
     for (unsigned i = 0; i < fixedCommand.size(); ++i)
     {
-        if (i == 0)
+        size_t found = fixedCommand.at(i).find("test");
+        
+        if (fixedCommand.at(i) == "[")
+        {
+            Test* x = new Test();
+            string buffer;
+            stringstream ss(fixedCommand.at(i + 1));
+            vector<string> tokens;
+            while (ss >> buffer)
+            {
+                tokens.push_back(buffer);
+            }
+            buffer = "-";
+            size_t checkFlag = tokens.at(0).find(buffer);
+            if (checkFlag != string::npos)
+            {
+                x->run(fixedCommand.at(i + 1), tokens.at(1), previous);
+            }
+            else
+            {
+                fixedCommand.at(i + 1).append(" -e");
+                x->run(fixedCommand.at(i + 1), tokens.at(0), previous);
+            }
+            i += 2;
+        }
+        else if (found == 0)
+        {
+            Test* x = new Test();
+            string buffer;
+            stringstream ss(fixedCommand.at(i));
+            vector<string> tokens;
+            while (ss >> buffer)
+            {
+                tokens.push_back(buffer);
+            }
+            buffer = "-";
+            size_t checkFlag = tokens.at(1).find(buffer);
+            if (checkFlag != string::npos)
+            {
+                x->run(fixedCommand.at(i), tokens.at(2), previous);
+            }
+            else
+            {
+                fixedCommand.at(i).append(" -e");
+                x->run(fixedCommand.at(i), tokens.at(1), previous);
+            }
+        }
+        else if (fixedCommand.at(i) == "(")
+        {
+            Paren* x = new Paren();
+            x->run(fixedCommand.at(i + 1), previous);
+            ++i;
+        }
+        else if (i == 0)
         {
             Executable* x = new Executable();
             x->run(fixedCommand.at(i), previous);

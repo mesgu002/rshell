@@ -1,10 +1,11 @@
 CC = g++
 FLAGS = -W -Wall -Werror -pedantic -ansi
+PARAMS = main.o and.o executable.o or.o parser.o test.o paren.o
 
 
-all: main.o and.o executable.o or.o parser.o
+all: $(PARAMS)
 	mkdir -p ./bin
-	$(CC) $(FLAGS) main.o and.o executable.o or.o parser.o -o ./bin/rshell
+	$(CC) $(FLAGS) $(PARAMS) -o ./bin/rshell
 	rm *o
 
 main.o: src/main.cpp
@@ -21,6 +22,12 @@ or.o: src/or.cpp
 	
 parser.o: src/parser.cpp
 	$(CC) $(FLAGS) src/parser.cpp -c
+	
+test.o: src/test.cpp
+	$(CC) $(FLAGS) src/test.cpp -c
+	
+paren.o: src/paren.cpp
+	$(CC) $(FLAGS) src/paren.cpp -c
 	
 clean:
 	rm -rf bin

@@ -5,18 +5,18 @@ test -e makefile && echo true
 test -f README.md && echo true
 test -d test && echo true
 
-[-e LICENSE] && echo true
-[-d test] && echo true
-[-f README.md] && echo true
+[ -e LICENSE ] && echo true
+[ -d test ] && echo true
+[ -f README.md ] && echo true
 
 echo this should print false
 test -e asdf || echo false
 test -f jkl || echo false
 test -d upoasdf || echo false
 
-[-e asdf] || echo false
-[-f jkl] || echo false
-[-d upoasdf] || echo false
+[ -e asdf ] || echo false
+[ -f jkl ] || echo false
+[ -d upoasdf ] || echo false
 
 echo exiting...
 
