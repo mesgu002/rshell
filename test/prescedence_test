@@ -18,4 +18,6 @@ echo this should print error hi hola
 echo this should print A E
 ((echo A) || echo B || (echo C && echo D) && echo E)
 
+echo exiting...
+
 exit
