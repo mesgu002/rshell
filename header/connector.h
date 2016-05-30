@@ -1,22 +1,32 @@
-#ifndef CONNECTOR_H
-#define CONNECTOR_H
+#ifndef __CONNECTOR_H
+#define __CONNECTOR_H
 
-#include "base.h"
+#include "sysCommand.h"
+#include "exit.h"
+#include "test.h"
+#include "parenthesis.h"
+#include "command.h"
+#include <cstdlib>
 
 using namespace std;
 
-class connector : public base
+class Connector : public Base
 {
 	protected:
-
-	base* left; //Used to access the left child of a connector
-	base* right; //Used to access the right child of a connector
-
+	
+		Command* Command;
+	/*
+	Base* left; //Used to access the left child of a connector
+	Base* right; //Used to access the right child of a connector
+	*/
 	public:
-
-	connector ( base* lhs , base* rhs );
-	connector ();
-	//virtual bool execute = 0; //execute function for derived classes.
+	
+		Connector();
+		~Connector();
+		virtual void execute (bool &previous, vector <string> &commands);
+	/*
+	Connector ( Base* lhs , Base* rhs );
+	*/
 };
 
 #endif
