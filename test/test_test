@@ -1,33 +1,33 @@
 echo testing test command...
 
 echo this should print true
-test -e ../makefile && echo true
-test -f ../README.md && echo true
-test -d ../test && echo true
+test -e ../makefile 
+test -f ../README.md
+test -d ../test
 
 <<<<<<< HEAD
-[-e ../LICENSE] && echo true
-[-d ../test] && echo true
-[-f ../README.md] && echo true
+[-e ../LICENSE]
+[-d ../test] 
+[-f ../README.md] 
 =======
-[ -e LICENSE ] && echo true
-[ -d test ] && echo true
-[ -f README.md ] && echo true
+[ -e LICENSE ] 
+[ -d test ]
+[ -f README.md ]
 >>>>>>> bca0f907e54637070de4cd3f0d56338aabec7877
 
 echo this should print false
-test -e ../asdf || echo false
-test -f ../jkl || echo false
-test -d ../upoasdf || echo false
+test -e ../asdf
+test -f ../jkl
+test -d ../upoasdf 
 
 <<<<<<< HEAD
-[-e ../asdf] || echo false
-[-f ../jkl] || echo false
-[-d ../upoasdf] || echo false
+[-e ../asdf]
+[-f ../jkl]
+[-d ../upoasdf]
 =======
-[ -e asdf ] || echo false
-[ -f jkl ] || echo false
-[ -d upoasdf ] || echo false
+[ -e asdf ]
+[ -f jkl ] 
+[ -d upoasdf ]
 >>>>>>> bca0f907e54637070de4cd3f0d56338aabec7877
 
 echo exiting...
