@@ -9,6 +9,7 @@ int main()
     Parser* cmds = new Parser();
     string command;     //Used for user input
     string login;       //Get the login name of the user
+    bool previous = true;
     if (getlogin() == NULL)
     {
         login = "";
@@ -34,7 +35,7 @@ int main()
             cout << "$ ";
             getline(cin, command);      //Get user input
         }
-        cmds->parse(command);
+        cmds->parse(command, previous);
         command = "";
     }
     return 0;
