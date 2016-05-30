@@ -1,14 +1,22 @@
-all: main.o assn1.o
-	mkdir -p ./bin
-	g++ -W -Wall -Werror -pedantic -ansi main.o assn1.o	-o ./bin/rshell
+CC = g++
+CFLAGS = -Wall -Werror -ansi -pedantic
+DIRECT = bin
+SRCS = src
+SRC := $(wildcard src/*.cpp)
+OBJS :=  $(notdir $(SRC:.cpp=.o))
 
-main.o: src/main.cpp
-	mkdir -p ./bin
-	g++ -W -Wall -Werror -pedantic -ansi src/main.cpp -c
-	
-assn1.o: src/assn1.cpp src/assn1.h
-	mkdir -p ./bin
-	g++ -W -Wall -Werror -pedantic -ansi src/assn1.cpp -c
-	
+all: rshell
+
+rshell: $(DIRECT)/rshell
+
+$(DIRECT)/rshell: $(DIRECT)/$(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
+
+$(DIRECT)/%.o: $(SRCS)/%.cpp
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(DIRECT)/:
+	mkdir -p $@
+
 clean:
-	rm *o -rf bin
+	rm -r $(DIRECT)
