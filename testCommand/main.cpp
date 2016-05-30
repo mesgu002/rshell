@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void run(string userInput, string path)
+void findFile(string userInput, string path)
 {
     struct stat sb;
     if(stat(path.c_str(), &sb) == -1)
