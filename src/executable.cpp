@@ -16,7 +16,6 @@ void Executable::run(string command, bool &previous)
 	}
 	if (mytok.at(0) == Exit)
 	{
-	    cout << "GOODBYE" << endl;
 	    exit(0);
 	}
     char** temp = new char*[mytok.size() + 1];  //convert tokens to Char**
