@@ -18,6 +18,9 @@ echo this should print error hi hey
 echo this should print A E
 ((echo A) || echo B || (echo C && echo D) && echo E)
 
+echo this should print A true B
+((echo A && test -f ../makefile) && echo B)
+
 echo exiting...
 
 exit
