@@ -31,6 +31,11 @@ rmdir spoopy
 echo this should print false
 test -d spoopy
 
+echo this should print true
+touch spoopy.cpp && test -f spoopy.cpp && rm spoopy.cpp
+
+echo this should print false
+test -f spoopy.cpp
 
 echo exiting...
 
