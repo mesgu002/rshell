@@ -14,7 +14,8 @@
 
 using namespace std;
 
-class Base {
+class Base 
+{
     public:
         Base() { }
         virtual void run(string command, bool &previous) = 0;

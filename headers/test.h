@@ -13,7 +13,8 @@
 
 using namespace std;
 
-class Test {
+class Test 
+{
     public:
         Test() { }
         void run(string command, string path, bool &previous);

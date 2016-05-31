@@ -6,7 +6,8 @@
 
 using namespace std;
 
-class And : public Base {
+class And : public Base 
+{
     private:
         Base* cmd;
     public:

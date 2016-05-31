@@ -8,7 +8,8 @@ void Parser::parse(string command, bool &previous)
     string temp;                        //takes char one at a time from command
     for (unsigned i = 0; i < command.size(); ++i)
     {
-        if (command[i] == '"')          //check for quotes
+        //check for quotes
+        if (command[i] == '"')
         {
             int checkQuotes = 0;
             ++checkQuotes;
@@ -24,13 +25,16 @@ void Parser::parse(string command, bool &previous)
             if (checkQuotes == 0)
             {
                 temp.insert(0, command, i + 1, j - i - 1);
-                if (!temp.empty())               //if command wasn't ""
+                //if command wasn't ""
+                if (!temp.empty())               
                 {
                     fixedCommand.push_back(temp);
                     temp = "";
                 }
                 i = j + 1;
             }
+            
+            //no end quote
             else
             {
                 cout << "Error: No matching quote" << endl;
@@ -38,6 +42,7 @@ void Parser::parse(string command, bool &previous)
             }
         }
         
+        //check for "(" and ")"
         else if (command[i] == '(')
         {
             int checkParen = 0;
@@ -51,6 +56,9 @@ void Parser::parse(string command, bool &previous)
                     break;
                 }
             }
+            
+            //both "(" and ")" were found so push the connectors and everything
+            //in between into fixedCommand
             if (checkParen == 0)
             {
                 fixedCommand.push_back("(");
@@ -63,6 +71,8 @@ void Parser::parse(string command, bool &previous)
                 fixedCommand.push_back(")");
                 i = j + 1;
             }
+            
+            //no end ")"
             else
             {
                 cout << "Error: No matching parenthesis" << endl;
@@ -70,9 +80,11 @@ void Parser::parse(string command, bool &previous)
             }
         }
         
-        else if (command[i] == ';')     //check for ';'
+        //check for ';' and push onto fixedCommand
+        else if (command[i] == ';')
         {
-            if (!temp.empty())           //make sure command isn't ""
+            //make sure command isn't ""
+            if (!temp.empty())
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -80,10 +92,12 @@ void Parser::parse(string command, bool &previous)
             fixedCommand.push_back(";");
             ++i;
         }
-        //Check for "|"
+        
+        //Check for "|" and push onto fixedCommand
         else if (command[i] == '|' && command[i + 1] == '|')
         {
-            if (!temp.empty())           //make sure command isn't ""
+            //make sure command isn't ""
+            if (!temp.empty())
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -92,10 +106,12 @@ void Parser::parse(string command, bool &previous)
             ++i;
             ++i;
         }
-        //Check for "&"
+        
+        //Check for "&" and push onto fixedCommand
         else if (command[i] == '&' && command[i + 1] == '&')
         {
-            if (!temp.empty())           //make sure command isn't ""
+            //make sure command isn't ""
+            if (!temp.empty())
             {
                 fixedCommand.push_back(temp);
                 temp = "";
@@ -104,42 +120,62 @@ void Parser::parse(string command, bool &previous)
             ++i;
             ++i;
         }
-        else if (command[i] == '#')     //Check for '#'
+        
+        //Check for '#' and only push everything before the '#' onto
+        //fixedCommand
+        else if (command[i] == '#')
         {
             fixedCommand.push_back(temp);
             break;
         }
+        
+        //not a character that requires a break so continue to next character
         else
         {
             temp.push_back(command[i]); //Not a connector so is part of a
         }                               //command that shouldn't be split
     }
-    if (!temp.empty())                   //make sure command isn't ""
+    
+    //make sure command isn't ""
+    if (!temp.empty())
     {
         fixedCommand.push_back(temp);
     }
-    
     vector<Base* > execute;
+    
+    //iterate through fixedCommand to create the appropriate object type based
+    //on the connector before each command
     for (unsigned i = 0; i < fixedCommand.size(); ++i)
     {
+        //test for test command
         size_t found = fixedCommand.at(i).find("test");
         size_t bracket = fixedCommand.at(i).find("[");
+        
+        //test command was found
         if (found == 0 || bracket == 0)
         {
             Test* x = new Test();
             string buffer;
+            
+            //tokenize at spaces
             stringstream ss(fixedCommand.at(i));
             vector<string> tokens;
             while (ss >> buffer)
             {
                 tokens.push_back(buffer);
             }
+            
+            //check to see if a flag was input by the user
             buffer = "-";
             size_t checkFlag = tokens.at(1).find(buffer);
+            
+            //flag was input
             if (checkFlag != string::npos)
             {
                 x->run(fixedCommand.at(i), tokens.at(2), previous);
             }
+            
+            //no flag so append '-e' flag
             else
             {
                 fixedCommand.at(i).append(" -e");
@@ -147,31 +183,32 @@ void Parser::parse(string command, bool &previous)
             }
             ++i;
         }
+        
+        //check to see if parenthesis
         else if (fixedCommand.at(i) == "(")
         {
             Paren* x = new Paren();
             x->run(fixedCommand.at(i + 1), previous);
             ++i;
         }
+        
+        //run first command irregardless of connector
         else if (i == 0)
         {
             Executable* x = new Executable();
             x->run(fixedCommand.at(i), previous);
         }
+        
+        //command is an "Or" command
         else if (fixedCommand.at(i) == "||")
         {
             Executable* y = new Executable();
             Or* x = new Or(y);
-            if (fixedCommand.at(i + 1) == "[")
-            {
-                x->run(fixedCommand.at(i + 2), previous);
-            }
-            else
-            {
-                x->run(fixedCommand.at(i + 1), previous);
-            }
+            x->run(fixedCommand.at(i + 1), previous);
             ++i;
         }
+        
+        //command is an "And" command
         else if (fixedCommand.at(i) == "&&")
         {
             Executable* y = new Executable();
@@ -179,6 +216,8 @@ void Parser::parse(string command, bool &previous)
             x->run(fixedCommand.at(i + 1), previous);
             ++i;
         }
+        
+        //command is a "Semicolon" command
         else if (fixedCommand.at(i) == ";")
         {
             Executable* x = new Executable();

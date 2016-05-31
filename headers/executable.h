@@ -15,7 +15,8 @@
 
 using namespace std;
 
-class Executable : public Base {
+class Executable : public Base 
+{
     public:
         Executable() { }
         void run(string command, bool &previous);

@@ -12,7 +12,8 @@
 
 using namespace std;
 
-class Parser {
+class Parser 
+{
     public:
         Parser() { }
         void parse(string command, bool &previous);
