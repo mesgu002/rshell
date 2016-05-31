@@ -37,6 +37,8 @@ touch spoopy.cpp && test -f spoopy.cpp && rm spoopy.cpp
 echo this should print false
 test -f spoopy.cpp
 
+echo this is an error
+test -9 ../makefile
 echo exiting...
 
 exit
