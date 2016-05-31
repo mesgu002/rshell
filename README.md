@@ -88,6 +88,8 @@ where script can be replaced by any of these following provided scripts:
 2. multi_command.sh // tests commands with ;, &&, or ||
 3. commented_command.sh // tests commands with comments
 4. exit.sh             //tests exit  and commands with exit
+5. test.sh            //tests the test command
+6. precedence.sh     //test precedence functionality
 ```
 ##Partner Info:
 
