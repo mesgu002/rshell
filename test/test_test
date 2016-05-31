@@ -5,30 +5,32 @@ test -e ../makefile
 test -f ../README.md
 test -d ../test
 
-<<<<<<< HEAD
 [-e ../LICENSE]
 [-d ../test] 
 [-f ../README.md] 
-=======
 [ -e LICENSE ] 
 [ -d test ]
 [ -f README.md ]
->>>>>>> bca0f907e54637070de4cd3f0d56338aabec7877
 
 echo this should print false
 test -e ../asdf
 test -f ../jkl
 test -d ../upoasdf 
 
-<<<<<<< HEAD
 [-e ../asdf]
 [-f ../jkl]
 [-d ../upoasdf]
-=======
 [ -e asdf ]
 [ -f jkl ] 
 [ -d upoasdf ]
->>>>>>> bca0f907e54637070de4cd3f0d56338aabec7877
+
+echo this should print true
+mkdir spoopy && test -d spoopy
+rmdir spoopy
+
+echo this should print false
+test -d spoopy
+
 
 echo exiting...
 
