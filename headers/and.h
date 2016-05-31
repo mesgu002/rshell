@@ -2,10 +2,12 @@
 #define AND_H
 
 #include "base.h"
+#include "test.h"
 
 using namespace std;
 
-class And : public Base {
+class And : public Base 
+{
     private:
         Base* cmd;
     public:

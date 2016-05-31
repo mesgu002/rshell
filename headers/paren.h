@@ -6,7 +6,8 @@
 
 using namespace std;
 
-class Paren : public Base {
+class Paren : public Base 
+{
     public:
         Paren() { }
         void run(string command, bool &previous);

@@ -2,10 +2,12 @@
 #define OR_H
 
 #include "base.h"
+#include "test.h"
 
 using namespace std;
 
-class Or : public Base {
+class Or : public Base 
+{
     private: 
         Base* cmd;
     public:
