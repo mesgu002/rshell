@@ -2,6 +2,7 @@
 #define AND_H
 
 #include "base.h"
+#include "test.h"
 
 using namespace std;
 

@@ -5,7 +5,7 @@ using namespace std;
 void Test::run(string command, string path, bool &previous)
 {
     struct stat sb;
-    if(stat(path.c_str(), &sb) == -1)
+    if (stat(path.c_str(), &sb) == -1)
     {
         perror("stat");
         cout << "(False)" << endl;
