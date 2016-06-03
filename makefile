@@ -1,11 +1,33 @@
-all: main.o assn1.o
-	g++ -W -Wall -Werror -pedantic -ansi main.o assn1.o
+CC = g++
+FLAGS = -W -Wall -Werror -pedantic -ansi
+PARAMS = main.o and.o executable.o or.o parser.o test.o paren.o
 
-main.o: assn1.cpp assn1.h main.cpp
-	g++ -W -Wall -Werror -pedantic -ansi -c main.cpp
+
+all: $(PARAMS)
+	mkdir -p ./bin
+	$(CC) $(FLAGS) $(PARAMS) -o ./bin/rshell
+	rm *o
+
+main.o: src/main.cpp
+	$(CC) $(FLAGS) src/main.cpp src/parser.cpp -c
 	
-assn1.o: assn1.cpp assn1.h
-	g++ -W -Wall -Werror -pedantic -ansi -c assn1.cpp
+and.o: src/and.cpp
+	$(CC) $(FLAGS) src/and.cpp -c
+	
+executable.o: src/executable.cpp
+	$(CC) $(FLAGS) src/executable.cpp -c
+	
+or.o: src/or.cpp
+	$(CC) $(FLAGS) src/or.cpp -c
+	
+parser.o: src/parser.cpp
+	$(CC) $(FLAGS) src/parser.cpp -c
+	
+test.o: src/test.cpp
+	$(CC) $(FLAGS) src/test.cpp -c
+	
+paren.o: src/paren.cpp
+	$(CC) $(FLAGS) src/paren.cpp -c
 	
 clean:
-	rm *o a.out
+	rm -rf bin

@@ -1,0 +1,28 @@
+echo
+echo "testing single commands"
+echo
+
+ls
+echo
+
+ls -a
+echo
+
+pwd
+echo
+
+mkdir random
+echo
+
+ls -l
+echo
+
+
+ls -l
+echo
+
+echo "Hello World && \\ ; "
+
+
+echo "Exiting now..."
+exit

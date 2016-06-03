@@ -1,0 +1,44 @@
+echo testing test command...
+
+echo this should print true
+test -e ../makefile 
+test -f ../README.md
+test -d ../test
+
+[-e ../LICENSE]
+[-d ../test] 
+[-f ../README.md] 
+[ -e LICENSE ] 
+[ -d test ]
+[ -f README.md ]
+
+echo this should print false
+test -e ../asdf
+test -f ../jkl
+test -d ../upoasdf 
+
+[-e ../asdf]
+[-f ../jkl]
+[-d ../upoasdf]
+[ -e asdf ]
+[ -f jkl ] 
+[ -d upoasdf ]
+
+echo this should print true
+mkdir spoopy && test -d spoopy
+rmdir spoopy
+
+echo this should print false
+test -d spoopy
+
+echo this should print true
+touch spoopy.cpp && test -f spoopy.cpp && rm spoopy.cpp
+
+echo this should print false
+test -f spoopy.cpp
+
+echo this is an error
+test -9 ../makefile
+echo exiting...
+
+exit

@@ -1,0 +1,23 @@
+echo testing precedence...
+
+echo this shoud print A B D
+echo A && echo B || echo C && echo D
+
+echo this should print A B
+(echo A && echo B) || (echo C && echo D)
+
+echo this should print true B false C
+( [ single_test ] && echo B ) && [ rsc ] || echo C
+
+echo this should print error hi hello
+(ls -j || echo hi) && echo hello
+
+echo this should print A false B true
+echo A && test ../make file || echo B && test ../makefile
+
+echo this should print A false
+(echo A && test ../make file) || (echo B && test ../makefile)
+
+echo exiting...
+
+exit

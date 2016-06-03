@@ -1,0 +1,17 @@
+echo "beginning comment test.."
+
+echo
+echo "ls #please don't read this rshell"
+ls #Just ignore this part too
+echo
+
+echo "echo hello && echo world && ls -a # pwd;"
+echo bar && ls -a # pwd;
+echo
+
+echo "# stuff; ls; mkdir folder2"
+# opijmk; ls; mkdir R@ndom
+echo
+
+echo hello#asfa && exit
+exit

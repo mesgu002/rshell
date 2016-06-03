@@ -1,0 +1,11 @@
+echo
+echo "Beginning Multi Command test.."
+
+echo hello && echo world && echo fubar
+ls -a && echo hello
+asdfl || echo "asdfl did not print"
+
+echo "combination of || and &&" || echo "this shouldn't run" && "this should run"
+echo
+
+echo "Exiting now.." && exit
