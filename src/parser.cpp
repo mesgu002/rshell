@@ -24,7 +24,7 @@ void Parser::parse(string command, bool &previous)
             }
             if (checkQuotes == 0)
             {
-                temp.insert(0, command, i + 1, j - i - 1);
+                temp.insert(temp.size(), command, i + 1, j - i - 1);
                 //if command wasn't ""
                 if (!temp.empty())               
                 {
@@ -50,13 +50,20 @@ void Parser::parse(string command, bool &previous)
             unsigned j = i + 1;
             for (; j < command.size(); ++j)
             {
-                if (command.at(j) == ')')
+                if (command.at(j) == '(')
+                {
+                    ++checkParen;
+                }
+                else if (command.at(j) == ')')
                 {
                     --checkParen;
-                    break;
+                    if (checkParen == 0)
+                    {
+                        break;
+                    }
+                    // break;
                 }
             }
-            
             //both "(" and ")" were found so push the connectors and everything
             //in between into fixedCommand
             if (checkParen == 0)
@@ -141,6 +148,7 @@ void Parser::parse(string command, bool &previous)
     {
         fixedCommand.push_back(temp);
     }
+    
     vector<Base* > execute;
     
     //iterate through fixedCommand to create the appropriate object type based
@@ -213,8 +221,11 @@ void Parser::parse(string command, bool &previous)
         {
             Executable* y = new Executable();
             And* x = new And(y);
-            x->run(fixedCommand.at(i + 1), previous);
-            ++i;
+            if (fixedCommand.at(i + 1) != "(")
+            {
+                x->run(fixedCommand.at(i + 1), previous);
+                ++i;
+            }
         }
         
         //command is a "Semicolon" command
