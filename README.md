@@ -35,6 +35,46 @@ If a command is followed by the || connector, then the next command is executed 
 ###; Connector
 If a command is followed by the ; connector, then the next command is always executed.
 
+### Precedence
+rshell handles precedence using the parentheses operators. 
+
+For example, 
+```
+$ echo A && echo B || echo C && echo D
+```
+would print:
+```
+A
+B
+D
+```
+
+However, we can add parentheses to change the precedence of the connectors
+```
+$ (echo A && echo B) || (echo C && echo D)
+```
+which would print
+```
+A
+B
+```
+### The Test Command
+The test command allows users to do various tests and sets its exit code to 0 (*TRUE*) or 1 (*FALSE*) whenever such a test succeeds or not.
+This command allows users to run tests using the following flags:
+
+```
+-e checks if the file/directory exists
+-f checks if the file/directory exists and is a regular file 
+-d checks if the fiel/directory exists and is a directory
+```
+If a user does not specify a flag, the -e functionality will be used by default. The result of the test will be printed to stdout as either *True* or *False*.
+
+Alternatively, the test command can be run by using the [] operator.
+
+```
+i.e. test -e makefile is the same as [-e makefile]
+```
+
 ## Test Scripts:
 We have also included a set of test scripts for you to try with rshell!  
 To run them, enter this command within the src directory:
