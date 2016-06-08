@@ -128,6 +128,12 @@ void Parser::parse(string command, bool &previous)
             ++i;
         }
         
+        else if (command[i] == '<' || command[i] == '>' || command[i] == '|')
+        {
+            temp.push_back(command[i]);
+            fixedCommand.push_back(">");
+        }
+        
         //Check for '#' and only push everything before the '#' onto
         //fixedCommand
         else if (command[i] == '#')
@@ -192,6 +198,13 @@ void Parser::parse(string command, bool &previous)
             ++i;
         }
         
+        else if (fixedCommand.at(i) == ">")
+        {
+            Pipe* x = new Pipe();
+            x->run(fixedCommand.at(i + 1), previous);
+            ++i;
+        }
+        
         //check to see if parenthesis
         else if (fixedCommand.at(i) == "(")
         {
@@ -212,8 +225,11 @@ void Parser::parse(string command, bool &previous)
         {
             Executable* y = new Executable();
             Or* x = new Or(y);
-            x->run(fixedCommand.at(i + 1), previous);
-            ++i;
+            if (fixedCommand.at(i + 1) != "(" && fixedCommand.at(i + 1) != ">")
+            {
+                x->run(fixedCommand.at(i + 1), previous);
+                ++i;
+            }
         }
         
         //command is an "And" command
@@ -221,7 +237,7 @@ void Parser::parse(string command, bool &previous)
         {
             Executable* y = new Executable();
             And* x = new And(y);
-            if (fixedCommand.at(i + 1) != "(")
+            if (fixedCommand.at(i + 1) != "(" && fixedCommand.at(i + 1) != ">")
             {
                 x->run(fixedCommand.at(i + 1), previous);
                 ++i;
