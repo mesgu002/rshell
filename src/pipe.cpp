@@ -17,7 +17,7 @@ int openFile(string &cmd, int permissions)
     char_separator<char> space(" ");
     tokenizer<char_separator<char> > tok(cmd, space);
     tokenizer<char_separator<char> >::iterator it = tok.begin();
-    int valid = open((*it).c_str(), permissions);
+    int valid = open((*it).c_str(), permissions, S_IRWXU|S_IRWXG|S_IRWXO);
     if (valid == -1)
     {
         perror("open");
