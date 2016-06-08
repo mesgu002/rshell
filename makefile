@@ -1,6 +1,6 @@
 CC = g++
 FLAGS = -W -Wall -Werror -pedantic -ansi
-PARAMS = main.o and.o executable.o or.o parser.o test.o paren.o
+PARAMS = main.o and.o executable.o or.o parser.o test.o paren.o pipe.o
 
 
 all: $(PARAMS)
@@ -28,6 +28,9 @@ test.o: src/test.cpp
 	
 paren.o: src/paren.cpp
 	$(CC) $(FLAGS) src/paren.cpp -c
+	
+pipe.o: src/pipe.cpp
+	$(CC) $(FLAGS) src/pipe.cpp -c
 	
 clean:
 	rm -rf bin

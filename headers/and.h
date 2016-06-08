@@ -3,6 +3,7 @@
 
 #include "base.h"
 #include "test.h"
+#include <boost/tokenizer.hpp>
 
 using namespace std;
 
