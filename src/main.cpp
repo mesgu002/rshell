@@ -26,17 +26,13 @@ int main()
     }
     while (true)                        //Loop until exit called
     {
-        while (command == "")           //Reloop if user types empty string
+        if (getlogin() != NULL)     //Just display "$ " if getlogin() failed
         {
-            if (getlogin() != NULL)     //Just display "$ " if getlogin() failed
-            {
-                cout << login << "@" << host;
-            }
-            cout << "$ ";
-            getline(cin, command);      //Get user input
+            cout << login << "@" << host;
         }
+        cout << "$ ";
+        getline(cin, command);      //Get user input
         cmds->parse(command, previous);
-        command = "";
     }
     return 0;
 }

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <sys/wait.h>
+#include <cerrno>
 #include <fcntl.h>
 #include <cstring>
 #include <boost/tokenizer.hpp> 

@@ -130,6 +130,11 @@ void Parser::parse(string command, bool &previous)
         
         else if (command[i] == '<' || command[i] == '>' || command[i] == '|')
         {
+            if (command[i + 1] == '>')
+            {
+                temp.push_back(command[i]);
+                ++i;
+            }
             temp.push_back(command[i]);
             fixedCommand.push_back(">");
         }

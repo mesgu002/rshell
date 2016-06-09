@@ -12,7 +12,7 @@ struct pipes
 vector <pipes> args;
 int save[2];
 
-int openFile(string &cmd, int permissions)
+int openFile(string &cmd, int permissions, bool &previous)
 {
     char_separator<char> space(" ");
     tokenizer<char_separator<char> > tok(cmd, space);
@@ -21,12 +21,12 @@ int openFile(string &cmd, int permissions)
     if (valid == -1)
     {
         perror("open");
-        exit(1);
+        previous = false;
     }
     return valid;
 }
 
-void executePipe(string cmd)
+void executePipe(string cmd, bool &previous)
 {
     char *command[999];
     int cntr = 0;
@@ -43,23 +43,23 @@ void executePipe(string cmd)
   	if (execvp(command[0], command) == -1)
   	{
   	    perror("execvp");
-  	    exit(1);
+  	    previous = false;
   	}
 }
 
-void setpipe(bool first, bool last, pipes a, pipes b)
+void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 {
     if (first)
 	{
 		if((save[0] = dup(0))==-1)
 		{
 			perror("dup");
-			exit(1);
+			previous = false;
 		}
 		if((save[1] = dup(1))==-1)
 		{
 			perror("dup");
-			exit(1);
+			previous = false;
 		}
 	}
 	if (!first)
@@ -67,17 +67,17 @@ void setpipe(bool first, bool last, pipes a, pipes b)
 		if(close(0)==-1)
 		{
 			perror("close");
-			exit(1);
+			previous = false;
 		}
 		if(dup(b.fd[0])==-1)
 		{
 			perror("dup");
-			exit(1);
+			previous = false;
 		}
 		if(close(b.fd[0])==-1)
 		{
 			perror("close");
-			exit(1);
+			previous = false;
 		}
 	}
 	if (!last)
@@ -85,17 +85,17 @@ void setpipe(bool first, bool last, pipes a, pipes b)
 		if(close(1)==-1)
 		{
 			perror("close");
-			exit(1);
+			previous = false;
 		}
 		if(dup(a.fd[1])==-1)
 		{
 			perror("dup");
-			exit(1);
+			previous = false;
 		}
 		if(close(a.fd[1])==-1)
 		{
 			perror("close");
-			exit(1);
+			previous = false;
 		}
 
 	}
@@ -104,35 +104,35 @@ void setpipe(bool first, bool last, pipes a, pipes b)
 		if(close(1)==-1)
 		{
 			perror("close");
-			exit(1);
+			previous = false;
 		}
 		if(dup2(save[1], 1)==-1)
 		{
 			perror("dup2");
-			exit(1);
+			previous = false;
 		}
 		if(close(save[1])==-1)
 		{
 			perror("close");
-			exit(1);
+			previous = false;
 		}
 		
 	}
 }
 
-void closing(int in, int out, int error)
+void closing(int in, int out, int error, bool &previous)
 {
     if (in > -1)
     {
         if (close(0) == -1)
         {
             perror("close");
-            exit(1);
+            previous = false;
         }
         if (dup(in) == -1)
         {
             perror("dup");
-            exit(1);
+            previous = false;
         }
     }
     if (out > -1)
@@ -144,7 +144,7 @@ void closing(int in, int out, int error)
         if (dup(out) == -1)
         {
             perror("dup");
-            exit(1);
+            previous = false;
         }
     }
     if (error > -1)
@@ -156,34 +156,34 @@ void closing(int in, int out, int error)
         if (dup(error) == -1)
         {
             perror("dup");
-            exit(1);
+            previous = false;
         }
     }
 }
 
-void reset(bool finish)
+void reset(bool finish, bool &previous)
 {
     if (finish)
     {
         if (close(0) == -1)
         {
             perror("close");
-            exit(1);
+            previous = false;
         }
         if (dup2(save[0], 0) == -1)
         {
             perror("dup2");
-            exit(1);
+            previous = false;
         }
         if (close(save[0]) == -1)
         {
             perror("close");
-            exit(1);
+            previous = false;
         }
     }
 }
 
-void execute(string &cmd, int in, int out, int error)
+void execute(string &cmd, int in, int out, int error, bool &previous)
 {
     char *command[999];
     int cntr = 0;
@@ -196,28 +196,27 @@ void execute(string &cmd, int in, int out, int error)
     	strcpy(command[cntr],(*it).c_str());
   	}
   	command[cntr] = 0;
-  	closing(in, out, error);
+  	closing(in, out, error, previous);
   	if (execvp(command[0], command) == -1)
   	{
   	    perror("execvp");
-  	    exit(1);
+  	    previous = false;
   	}
 }
 
 void Pipe::run(string command, bool &previous)
 {
-    previous = true;
     if (command.find("<") != string::npos)
     {
         int out = -1, in = -1;
         string left = command.substr(0, command.find("<"));
         string right = command.substr(command.find("<") + 1);
         string prev = right;
-        in = openFile(prev, O_RDWR);
+        in = openFile(prev, O_RDWR, previous);
         if (in == -1)
         {
             perror("in");
-            exit(1);
+            previous = false;
         }
         if (right.find(">") != string::npos)
         {
@@ -235,17 +234,17 @@ void Pipe::run(string command, bool &previous)
                 next = right.find(">") + 1;
             }
             right = right.substr(next);
-            out = openFile(right, permissions);
+            out = openFile(right, permissions, previous);
         }
         pid_t pid = fork();
         if (pid == -1)
         {
             perror("fork");
-            exit(1);
+            previous = false;
         }
         else if (pid == 0)
         {
-            execute(left, in, out, -1);
+            execute(left, in, out, -1, previous);
         }
         else
         {
@@ -254,7 +253,7 @@ void Pipe::run(string command, bool &previous)
                 if (close(in) == -1)
                 {
                     perror("close");
-                    exit(1);
+                    previous = false;
                 }
             }
             if (out != -1)
@@ -262,7 +261,7 @@ void Pipe::run(string command, bool &previous)
                 if (close(out) == -1)
                 {
                     perror("close");
-                    exit(1);
+                    previous = false;
                 }
             }
         }
@@ -299,6 +298,7 @@ void Pipe::run(string command, bool &previous)
             command = command.substr(temp + 1);
             goto append;
         }
+        args.clear();
         bool done = true;
         pipes pipe1;
         size_t index;
@@ -308,7 +308,7 @@ void Pipe::run(string command, bool &previous)
             if (pipe(pipe1.fd) == -1)
             {
                 perror("pipe");
-                exit(1);
+                previous = false;
             }
             args.push_back(pipe1);
             command = command.substr(command.find("|") + 1);
@@ -317,7 +317,7 @@ void Pipe::run(string command, bool &previous)
         if (pipe(pipe1.fd) == -1)
         {
             perror("pipe");
-            exit(1);
+            previous = false;
         }
         args.push_back(pipe1);
         index = 0;
@@ -329,18 +329,18 @@ void Pipe::run(string command, bool &previous)
             if (index == 0)
             {
                 first = true;
-                setpipe(first, last, temp, temp);
+                setpipe(first, last, temp, temp, previous);
             }
             else if (index == args.size() - 1)
             {
                 pipes temp2 = args.at(index - 1);
                 last = true;
-                setpipe(first, last, temp, temp2);
+                setpipe(first, last, temp, temp2, previous);
             }
             else
             {
                 pipes temp2 = args.at(index - 1);
-                setpipe(first, last, temp, temp2);
+                setpipe(first, last, temp, temp2, previous);
             }
             
             pid_t pid = fork();
@@ -350,13 +350,13 @@ void Pipe::run(string command, bool &previous)
             }
             else if (pid == 0)
             {
-                executePipe(args.at(index).left);
+                executePipe(args.at(index).left, previous);
             }
             ++index;
         }
         int status = 0;
         while (wait(&status) > 0);
-        reset(done);
+        reset(done, previous);
     }
     else if (command.find(">>") != string::npos)
     {
@@ -365,28 +365,28 @@ void Pipe::run(string command, bool &previous)
             int index = command.find(">>");
             string left = command.substr(0, index);
             string right = command.substr(command.find(">>") + 2);
-            int opened = openFile(right, permissions);
+            int opened = openFile(right, permissions, previous);
             pid_t pid = fork();
             if (pid == -1)
             {
                 perror("fork");
-                exit(1);
+                previous = false;
             }
             else if (pid == 0)
             {
-                execute(left, -1, opened, -1);
+                execute(left, -1, opened, -1, previous);
             }
             else 
             {
                 if (wait(0) == -1)
                 {
                     perror("wait");
-                    exit(1);
+                    previous = false;
                 }
                 if (close(opened) == -1)
                 {
                     perror("close");
-                    exit(1);
+                    previous = false;
                 }
             }
     }
@@ -397,28 +397,28 @@ void Pipe::run(string command, bool &previous)
             int index = command.find(">");
             string left = command.substr(0, index);
             string right = command.substr(command.find(">") + 1);
-            int opened = openFile(right, permissions);
+            int opened = openFile(right, permissions, previous);
             pid_t pid = fork();
             if (pid == -1)
             {
                 perror("fork");
-                exit(1);
+                previous = false;
             }
             else if (pid == 0)
             {
-                execute(left, -1, opened, -1);
+                execute(left, -1, opened, -1, previous);
             }
             else
             {
                 if (wait(0) == -1)
                 {
                     perror("wait");
-                    exit(1);
+                    previous = false;
                 }
                 if (close(opened) == -1)
                 {
                     perror("close");
-                    exit(1);
+                    previous = false;
                 }
             }
     }
