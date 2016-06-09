@@ -7,7 +7,7 @@ echo "Should just list test.sh"
 ls -a | grep test.sh
 echo "===================================="
 echo "Should print 21 21 306"
-ls | wc
+ls | cat | wc
 
 echo "===================================="
 echo "Should print 21 21 306"
@@ -19,7 +19,7 @@ ps |wc
 
 echo "===================================="
 echo "Should print 1 2 12 within TestOutput1"
-cat < testfiles/TestInput1 | tr A-Z a-z | wc > testfiles/TestOutput1
+cat < testfiles/TestInput1 | wc > testfiles/TestOutput1
 
 echo "===================================="
 echo "Should print:"
