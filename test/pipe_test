@@ -1,17 +1,31 @@
+echo "Testing Pipe..."
+
+echo "Should list every file in the working directory on its own line"
 ls | cat
 
-ls -a | grep src
+echo "Should list every file with test in its name"
+ls -a | grep test
 
+echo "Should print 14 14 188"
 ls | cat | wc
 
+echo "Should print 14 14 188"
 ls | wc
 
+echo "Should print 4 16 111"
 ps |wc
 
+echo "Should print 1 2 12 within TestOutput1"
 cat < testfiles/TestInput1 | tr A-Z a-z | wc > testfiles/TestOuput1
 
+echo "Should print:"
+echo "Hello"
+echo "Hello"
 cat < testfiles/TestInput2 | tee TestOutput1
 
+echo "Should print 1 4 15"
 echo this is a test | wc
+
+echo "Exiting test..."
 
 exit
