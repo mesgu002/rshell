@@ -1,3 +1,3 @@
 #!/bin/sh
 
-..bin/rshell < outputRedirection_test
+../bin/rshell < outputRedirection_test
