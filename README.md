@@ -110,3 +110,4 @@ Version 3, 29 June 2007
 3. Can't change user passwords using pwd
 4. Doesn't color text like bash
 5. rshell can't handle if exit is the first command
+6. Pipe Bug: The command ls -a | grep pipe.sh will work for the first time but will produce a dup error if done again.
