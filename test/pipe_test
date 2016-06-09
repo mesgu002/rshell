@@ -3,29 +3,36 @@ echo "Testing Pipe..."
 echo "Should list every file in the working directory on its own line"
 ls | cat
 echo "===================================="
-#echo "Should just list test.sh"
-#ls -a | grep test.sh
+echo "Should just list test.sh"
+ls -a | grep test.sh
+echo "===================================="
+echo "Should print 14 14 188"
+ls | cat | wc
 
-#echo "Should print 14 14 188"
-#ls | cat | wc
+echo "===================================="
+echo "Should print 14 14 188"
+ls | wc
 
-#echo "Should print 14 14 188"
-#ls | wc
+echo "===================================="
+echo "Should print 4 16 111"
+ps |wc
 
-#echo "Should print 4 16 111"
-#ps |wc
+echo "===================================="
+echo "Should print 1 2 12 within TestOutput1"
+cat < testfiles/TestInput1 | tr A-Z a-z | wc > testfiles/TestOutput1
 
-#echo "Should print 1 2 12 within TestOutput1"
-#cat < testfiles/TestInput1 | tr A-Z a-z | wc > testfiles/TestOutput1
+echo "===================================="
+echo "Should print:"
+echo "Hello"
+echo "Hello"
+echo "Hello"
+cat < testfiles/TestInput2 | tee TestOutput1
 
-#echo "Should print:"
-#echo "Hello"
-#echo "Hello"
-#cat < testfiles/TestInput2 | tee TestOutput1
+echo "===================================="
+echo "Should print 1 4 15"
+echo this is a test | wc
 
-#echo "Should print 1 4 15"
-#echo this is a test | wc
-
+echo "===================================="
 echo "Exiting test..."
 
 exit
