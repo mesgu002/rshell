@@ -6,15 +6,15 @@ echo "===================================="
 echo "Should just list test.sh"
 ls -a | grep test.sh
 echo "===================================="
-echo "Should print 14 14 188"
-ls | cat | wc
-
-echo "===================================="
-echo "Should print 14 14 188"
+echo "Should print 21 21 306"
 ls | wc
 
 echo "===================================="
-echo "Should print 4 16 111"
+echo "Should print 21 21 306"
+ls | wc
+
+echo "===================================="
+echo "Should print 6 24 174"
 ps |wc
 
 echo "===================================="
