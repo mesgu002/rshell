@@ -128,14 +128,19 @@ void Parser::parse(string command, bool &previous)
             ++i;
         }
         
+        //Check for redirection or pipe command
         else if (command[i] == '<' || command[i] == '>' || command[i] == '|')
         {
+            //if double redirection won't push 2 '>' to fixedCommand
             if (command[i + 1] == '>')
             {
                 temp.push_back(command[i]);
                 ++i;
             }
+            //push everything till reaches connector or eof to buffer
             temp.push_back(command[i]);
+            
+            //ensure connector isn't pushed to fixedCommand twice
             if (fixedCommand.size() == 0 || 
                 fixedCommand.at(fixedCommand.size() - 1) != ">")
             {

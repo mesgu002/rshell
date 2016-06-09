@@ -3,15 +3,18 @@
 using namespace std;
 using namespace boost;
 
+//all the data our pipes need so code is more neat
 struct pipes
 {
     string left;
     int fd[2];
 };
 
+//create vector of all pipe ('|') commands
 vector <pipes> args;
 int save[2];
 
+//opens a file for input and gives proper permission to the use the file
 int openFile(string &cmd, int permissions, bool &previous)
 {
     char_separator<char> space(" ");
@@ -26,6 +29,7 @@ int openFile(string &cmd, int permissions, bool &previous)
     return valid;
 }
 
+//used to execute a pipe ('|') command
 void executePipe(string cmd, bool &previous)
 {
     char *command[999];
@@ -47,6 +51,8 @@ void executePipe(string cmd, bool &previous)
   	}
 }
 
+//sets all the necessary data for the pipes being created and does all the error
+//checking in one place
 void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 {
     if (first)
@@ -131,6 +137,8 @@ void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 	}
 }
 
+//closes the appropriate input output or error for the files being used with
+//'>>', '>', and '<' and does error checking
 void closing(int in, int out, int error, bool &previous)
 {
     if (in > -1)
@@ -180,6 +188,7 @@ void closing(int in, int out, int error, bool &previous)
     }
 }
 
+//closes the pipe('|') commands and check for errors
 void reset(bool finish, bool &previous)
 {
     if (finish)
@@ -205,6 +214,7 @@ void reset(bool finish, bool &previous)
     }
 }
 
+//used to execute all redirection ('>>', '>', '<') commands
 void execute(string &cmd, int in, int out, int error, bool &previous)
 {
     char *command[999];
@@ -229,12 +239,16 @@ void execute(string &cmd, int in, int out, int error, bool &previous)
 
 void Pipe::run(string command, bool &previous)
 {
+    //check for "<"
     if (command.find("<") != string::npos)
     {
         int out = -1, in = -1;
+        //string of everything left of "<"
         string left = command.substr(0, command.find("<"));
+        //string of everything right of "<"
         string right = command.substr(command.find("<") + 1);
         string prev = right;
+        //open the file on the right
         in = openFile(prev, O_RDWR, previous);
         if (in == -1)
         {
@@ -242,6 +256,9 @@ void Pipe::run(string command, bool &previous)
             previous = false;
             return;
         }
+        
+        //check to see if ">" or ">>" command also present in the command
+        //if there is gives appropriate permissions
         if (right.find(">") != string::npos)
         {
             prev = prev.substr(0, right.find(">"));
@@ -261,6 +278,8 @@ void Pipe::run(string command, bool &previous)
             out = openFile(right, permissions, previous);
         }
         
+        //execute the command and determine if it was executed correctly
+        //changes the previous bool based on execution outcome
         int status = 0;
         pid_t pid = fork();
         if (pid == -1)
@@ -302,6 +321,8 @@ void Pipe::run(string command, bool &previous)
                 previous = false;
             }
         }
+        
+        //close all inputs
         if (in != -1)
         {
             if (close(in) == -1)
@@ -311,6 +332,8 @@ void Pipe::run(string command, bool &previous)
                 return;
             }
         }
+        
+        //close all outputs
         if (out != -1)
         {
             if (close(out) == -1)
@@ -321,24 +344,31 @@ void Pipe::run(string command, bool &previous)
             }
         }
     }
+    
+    //check for "|"
     else if (command.find("|") != string::npos)
     {
         bool out = false;
         bool append = false;
+        
+        //check for "<" also in the command
         if (command.find("<") != string::npos)
         {
             int temp = command.find("<");
             command.erase(temp, 1);
         }
+        
+        //check for ">" also in the command and jump to ">" if true
         if (command.find(">") != string::npos)
         {
             out = true;
         }
+        
+        //check for ">>" also in the command and jump to ">>" if true
         if (command.find(">>") != string::npos)
         {
             append = true;
         }
-        
         if (out)
         {
             int temp = 0;
@@ -353,10 +383,14 @@ void Pipe::run(string command, bool &previous)
             command = command.substr(temp + 1);
             goto append;
         }
+        
+        //clear vector of previous data
         args.clear();
         bool done = true;
         pipes pipe1;
         size_t index;
+        
+        //check for multiple "|"
         while ((index = command.find("|")) != string::npos)
         {
             pipe1.left = command.substr(0, index);
@@ -378,6 +412,8 @@ void Pipe::run(string command, bool &previous)
         }
         args.push_back(pipe1);
         index = 0;
+        
+        //create pipes with all the appropriate "filters"
         while (index != args.size())
         {
             bool first = false;
@@ -400,6 +436,8 @@ void Pipe::run(string command, bool &previous)
                 setpipe(first, last, temp, temp2, previous);
             }
             
+            //execute commands with pipes and determine if command executed
+            //correctly and update previous based on outcome
             int status = 0;
             pid_t pid = fork();
             if (pid == -1)
@@ -447,14 +485,26 @@ void Pipe::run(string command, bool &previous)
         while (wait(&status) > 0);
         reset(done, previous);
     }
+    
+    //check for ">>"
     else if (command.find(">>") != string::npos)
     {
         append:
+            //give correct permissions
             int permissions = O_RDWR|O_CREAT|O_APPEND;
             int index = command.find(">>");
+            
+            //string of everything left of ">>"
             string left = command.substr(0, index);
+            
+            //string of everything right of ">>"
             string right = command.substr(command.find(">>") + 2);
+            
+            //open right
             int opened = openFile(right, permissions, previous);
+            
+            //execute command and update previous based on success or failure
+            //of execution
             int status = 0;
             pid_t pid = fork();
             if (pid == -1)
@@ -496,6 +546,8 @@ void Pipe::run(string command, bool &previous)
                     previous = false;
                 }
             }
+            
+            //close file
             if (close(opened) == -1)
             {
                 perror("close");
@@ -506,11 +558,21 @@ void Pipe::run(string command, bool &previous)
     else if (command.find(">") != string::npos)
     {
         out:
+            //give correct permissions
             int permissions = O_RDWR|O_CREAT|O_TRUNC;
             int index = command.find(">");
+            
+            //string of everything left of ">"
             string left = command.substr(0, index);
+            
+            //string of everything right of "<"
             string right = command.substr(command.find(">") + 1);
+            
+            //open file
             int opened = openFile(right, permissions, previous);
+            
+            //execute command and update previous based on the success or
+            //failure of the execution
             int status = 0;
             pid_t pid = fork();
             if (pid == -1)
@@ -552,6 +614,8 @@ void Pipe::run(string command, bool &previous)
                     previous = false;
                 }
             }
+            
+            //close file
             if (close(opened) == -1)
             {
                 perror("close");
