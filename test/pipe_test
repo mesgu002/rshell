@@ -16,7 +16,7 @@ echo "===================================="
 #ps |wc
 
 #echo "Should print 1 2 12 within TestOutput1"
-#cat < testfiles/TestInput1 | tr A-Z a-z | wc > testfiles/TestOuput1
+#cat < testfiles/TestInput1 | tr A-Z a-z | wc > testfiles/TestOutput1
 
 #echo "Should print:"
 #echo "Hello"
