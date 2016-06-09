@@ -28,6 +28,7 @@ int openFile(string &cmd, int permissions, bool &previous)
 
 void executePipe(string cmd, bool &previous)
 {
+    int status = 0;
     char *command[999];
     int cntr = 0;
     char_separator<char> space(" ");
@@ -40,11 +41,51 @@ void executePipe(string cmd, bool &previous)
   	}
   	command[cntr] = 0;
   	
-  	if (execvp(command[0], command) == -1)
-  	{
-  	    perror("execvp");
-  	    previous = false;
-  	}
+  	pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        previous = false;
+        return;
+    }
+    if (pid == 0)
+    {
+        if (execvp(command[0], command) == -1)
+      	{
+      	    perror("execvp");
+      	    previous = false;
+            exit(EXIT_FAILURE);
+      	}
+    }
+    if (pid > 0)
+    {
+        int wpid;
+        do
+        {
+            wpid = waitpid(pid, &status, WUNTRACED);
+        }
+        while (wpid == -1 && errno == EINTR);
+        
+        if (wpid == -1)
+        {
+            perror("wait");
+        }
+        
+        if (status > 0)
+        {
+            previous = false;
+        }
+        
+        else if (WEXITSTATUS(status) == 0)
+        {
+            previous = true;
+        }
+        
+        else if (WEXITSTATUS(status) == 1)
+        {
+            previous = false;
+        }
+    }
 }
 
 void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
@@ -55,11 +96,13 @@ void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 		{
 			perror("dup");
 			previous = false;
+            return;
 		}
 		if((save[1] = dup(1))==-1)
 		{
 			perror("dup");
 			previous = false;
+            return;
 		}
 	}
 	if (!first)
@@ -68,16 +111,19 @@ void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 		{
 			perror("close");
 			previous = false;
+            return;
 		}
 		if(dup(b.fd[0])==-1)
 		{
 			perror("dup");
 			previous = false;
+            return;
 		}
 		if(close(b.fd[0])==-1)
 		{
 			perror("close");
 			previous = false;
+            return;
 		}
 	}
 	if (!last)
@@ -86,16 +132,19 @@ void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 		{
 			perror("close");
 			previous = false;
+            return;
 		}
 		if(dup(a.fd[1])==-1)
 		{
 			perror("dup");
 			previous = false;
+            return;
 		}
 		if(close(a.fd[1])==-1)
 		{
 			perror("close");
 			previous = false;
+            return;
 		}
 
 	}
@@ -105,16 +154,19 @@ void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
 		{
 			perror("close");
 			previous = false;
+            return;
 		}
 		if(dup2(save[1], 1)==-1)
 		{
 			perror("dup2");
 			previous = false;
+            return;
 		}
 		if(close(save[1])==-1)
 		{
 			perror("close");
 			previous = false;
+            return;
 		}
 		
 	}
@@ -128,11 +180,13 @@ void closing(int in, int out, int error, bool &previous)
         {
             perror("close");
             previous = false;
+            return;
         }
         if (dup(in) == -1)
         {
             perror("dup");
             previous = false;
+            return;
         }
     }
     if (out > -1)
@@ -140,11 +194,14 @@ void closing(int in, int out, int error, bool &previous)
         if (close(1) == -1)
         {
             perror("close");
+            previous = false;
+            return;
         }
         if (dup(out) == -1)
         {
             perror("dup");
             previous = false;
+            return;
         }
     }
     if (error > -1)
@@ -152,11 +209,14 @@ void closing(int in, int out, int error, bool &previous)
         if (close(2) == -1)
         {
             perror("close");
+            previous = false;
+            return;
         }
         if (dup(error) == -1)
         {
             perror("dup");
             previous = false;
+            return;
         }
     }
 }
@@ -169,16 +229,19 @@ void reset(bool finish, bool &previous)
         {
             perror("close");
             previous = false;
+            return;
         }
         if (dup2(save[0], 0) == -1)
         {
             perror("dup2");
             previous = false;
+            return;
         }
         if (close(save[0]) == -1)
         {
             perror("close");
             previous = false;
+            return;
         }
     }
 }
@@ -197,11 +260,52 @@ void execute(string &cmd, int in, int out, int error, bool &previous)
   	}
   	command[cntr] = 0;
   	closing(in, out, error, previous);
-  	if (execvp(command[0], command) == -1)
-  	{
-  	    perror("execvp");
-  	    previous = false;
-  	}
+    int status = 0;
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        previous = false;
+        return;
+    }
+    if (pid == 0)
+    {
+      	if (execvp(command[0], command) == -1)
+      	{
+      	    perror("execvp");
+      	    previous = false;
+            exit(EXIT_FAILURE);
+      	}
+    }
+    if (pid > 0)
+    {
+        int wpid;
+        do
+        {
+            wpid = waitpid(pid, &status, WUNTRACED);
+        }
+        while (wpid == -1 && errno == EINTR);
+        
+        if (wpid == -1)
+        {
+            perror("wait");
+        }
+        
+        if (status > 0)
+        {
+            previous = false;
+        }
+        
+        else if (WEXITSTATUS(status) == 0)
+        {
+            previous = true;
+        }
+        
+        else if (WEXITSTATUS(status) == 1)
+        {
+            previous = false;
+        }
+    }
 }
 
 void Pipe::run(string command, bool &previous)
@@ -217,6 +321,7 @@ void Pipe::run(string command, bool &previous)
         {
             perror("in");
             previous = false;
+            return;
         }
         if (right.find(">") != string::npos)
         {
@@ -236,33 +341,23 @@ void Pipe::run(string command, bool &previous)
             right = right.substr(next);
             out = openFile(right, permissions, previous);
         }
-        pid_t pid = fork();
-        if (pid == -1)
+        execute(left, in, out, -1, previous);
+        if (in != -1)
         {
-            perror("fork");
-            previous = false;
-        }
-        else if (pid == 0)
-        {
-            execute(left, in, out, -1, previous);
-        }
-        else
-        {
-            if (in != -1)
+            if (close(in) == -1)
             {
-                if (close(in) == -1)
-                {
-                    perror("close");
-                    previous = false;
-                }
+                perror("close");
+                previous = false;
+                return;
             }
-            if (out != -1)
+        }
+        if (out != -1)
+        {
+            if (close(out) == -1)
             {
-                if (close(out) == -1)
-                {
-                    perror("close");
-                    previous = false;
-                }
+                perror("close");
+                previous = false;
+                return;
             }
         }
     }
@@ -309,6 +404,7 @@ void Pipe::run(string command, bool &previous)
             {
                 perror("pipe");
                 previous = false;
+                return;
             }
             args.push_back(pipe1);
             command = command.substr(command.find("|") + 1);
@@ -318,6 +414,7 @@ void Pipe::run(string command, bool &previous)
         {
             perror("pipe");
             previous = false;
+            return;
         }
         args.push_back(pipe1);
         index = 0;
@@ -342,16 +439,7 @@ void Pipe::run(string command, bool &previous)
                 pipes temp2 = args.at(index - 1);
                 setpipe(first, last, temp, temp2, previous);
             }
-            
-            pid_t pid = fork();
-            if (pid == -1)
-            {
-                perror("fork");
-            }
-            else if (pid == 0)
-            {
-                executePipe(args.at(index).left, previous);
-            }
+            executePipe(args.at(index).left, previous);
             ++index;
         }
         int status = 0;
@@ -366,28 +454,12 @@ void Pipe::run(string command, bool &previous)
             string left = command.substr(0, index);
             string right = command.substr(command.find(">>") + 2);
             int opened = openFile(right, permissions, previous);
-            pid_t pid = fork();
-            if (pid == -1)
+            execute(left, -1, opened, -1, previous);
+            if (close(opened) == -1)
             {
-                perror("fork");
+                perror("close");
                 previous = false;
-            }
-            else if (pid == 0)
-            {
-                execute(left, -1, opened, -1, previous);
-            }
-            else 
-            {
-                if (wait(0) == -1)
-                {
-                    perror("wait");
-                    previous = false;
-                }
-                if (close(opened) == -1)
-                {
-                    perror("close");
-                    previous = false;
-                }
+                return;
             }
     }
     else if (command.find(">") != string::npos)
@@ -398,28 +470,13 @@ void Pipe::run(string command, bool &previous)
             string left = command.substr(0, index);
             string right = command.substr(command.find(">") + 1);
             int opened = openFile(right, permissions, previous);
-            pid_t pid = fork();
-            if (pid == -1)
+            execute(left, -1, opened, -1, previous);
+            cout << "TEST" << endl;
+            if (close(opened) == -1)
             {
-                perror("fork");
+                perror("close");
                 previous = false;
-            }
-            else if (pid == 0)
-            {
-                execute(left, -1, opened, -1, previous);
-            }
-            else
-            {
-                if (wait(0) == -1)
-                {
-                    perror("wait");
-                    previous = false;
-                }
-                if (close(opened) == -1)
-                {
-                    perror("close");
-                    previous = false;
-                }
+                return;
             }
     }
 }
