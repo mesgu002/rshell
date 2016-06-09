@@ -136,7 +136,11 @@ void Parser::parse(string command, bool &previous)
                 ++i;
             }
             temp.push_back(command[i]);
-            fixedCommand.push_back(">");
+            if (fixedCommand.size() == 0 || 
+                fixedCommand.at(fixedCommand.size() - 1) != ">")
+            {
+                fixedCommand.push_back(">");
+            }
         }
         
         //Check for '#' and only push everything before the '#' onto
@@ -158,6 +162,11 @@ void Parser::parse(string command, bool &previous)
     if (!temp.empty())
     {
         fixedCommand.push_back(temp);
+    }
+    
+    for (unsigned i = 0; i < fixedCommand.size(); ++i)
+    {
+        cout << fixedCommand.at(i) << endl;
     }
     
     vector<Base* > execute;

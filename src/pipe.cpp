@@ -28,7 +28,6 @@ int openFile(string &cmd, int permissions, bool &previous)
 
 void executePipe(string cmd, bool &previous)
 {
-    int status = 0;
     char *command[999];
     int cntr = 0;
     char_separator<char> space(" ");
@@ -40,52 +39,12 @@ void executePipe(string cmd, bool &previous)
     	strcpy(command[cntr],(*it).c_str());
   	}
   	command[cntr] = 0;
-  	
-  	pid_t pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        previous = false;
-        return;
-    }
-    if (pid == 0)
-    {
-        if (execvp(command[0], command) == -1)
-      	{
-      	    perror("execvp");
-      	    previous = false;
-            exit(EXIT_FAILURE);
-      	}
-    }
-    if (pid > 0)
-    {
-        int wpid;
-        do
-        {
-            wpid = waitpid(pid, &status, WUNTRACED);
-        }
-        while (wpid == -1 && errno == EINTR);
-        
-        if (wpid == -1)
-        {
-            perror("wait");
-        }
-        
-        if (status > 0)
-        {
-            previous = false;
-        }
-        
-        else if (WEXITSTATUS(status) == 0)
-        {
-            previous = true;
-        }
-        
-        else if (WEXITSTATUS(status) == 1)
-        {
-            previous = false;
-        }
-    }
+    if (execvp(command[0], command) == -1)
+  	{
+  	    perror("execvp");
+  	    previous = false;
+        exit(EXIT_FAILURE);
+  	}
 }
 
 void setpipe(bool first, bool last, pipes a, pipes b, bool &previous)
@@ -260,52 +219,12 @@ void execute(string &cmd, int in, int out, int error, bool &previous)
   	}
   	command[cntr] = 0;
   	closing(in, out, error, previous);
-    int status = 0;
-    pid_t pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        previous = false;
-        return;
-    }
-    if (pid == 0)
-    {
-      	if (execvp(command[0], command) == -1)
-      	{
-      	    perror("execvp");
-      	    previous = false;
-            exit(EXIT_FAILURE);
-      	}
-    }
-    if (pid > 0)
-    {
-        int wpid;
-        do
-        {
-            wpid = waitpid(pid, &status, WUNTRACED);
-        }
-        while (wpid == -1 && errno == EINTR);
-        
-        if (wpid == -1)
-        {
-            perror("wait");
-        }
-        
-        if (status > 0)
-        {
-            previous = false;
-        }
-        
-        else if (WEXITSTATUS(status) == 0)
-        {
-            previous = true;
-        }
-        
-        else if (WEXITSTATUS(status) == 1)
-        {
-            previous = false;
-        }
-    }
+  	if (execvp(command[0], command) == -1)
+  	{
+  	    perror("execvp");
+  	    previous = false;
+        exit(EXIT_FAILURE);
+  	}
 }
 
 void Pipe::run(string command, bool &previous)
@@ -341,7 +260,48 @@ void Pipe::run(string command, bool &previous)
             right = right.substr(next);
             out = openFile(right, permissions, previous);
         }
-        execute(left, in, out, -1, previous);
+        
+        int status = 0;
+        pid_t pid = fork();
+        if (pid == -1)
+        {
+            perror("fork");
+            previous = false;
+            return;
+        }
+        if (pid == 0)
+        {
+          	execute(left, in, out, -1, previous);
+        }
+        if (pid > 0)
+        {
+            int wpid;
+            do
+            {
+                wpid = waitpid(pid, &status, WUNTRACED);
+            }
+            while (wpid == -1 && errno == EINTR);
+            
+            if (wpid == -1)
+            {
+                perror("wait");
+            }
+            
+            if (status > 0)
+            {
+                previous = false;
+            }
+            
+            else if (WEXITSTATUS(status) == 0)
+            {
+                previous = true;
+            }
+            
+            else if (WEXITSTATUS(status) == 1)
+            {
+                previous = false;
+            }
+        }
         if (in != -1)
         {
             if (close(in) == -1)
@@ -439,7 +399,48 @@ void Pipe::run(string command, bool &previous)
                 pipes temp2 = args.at(index - 1);
                 setpipe(first, last, temp, temp2, previous);
             }
-            executePipe(args.at(index).left, previous);
+            
+            int status = 0;
+            pid_t pid = fork();
+            if (pid == -1)
+            {
+                perror("fork");
+                previous = false;
+                return;
+            }
+            if (pid == 0)
+            {
+                executePipe(args.at(index).left, previous);
+            }
+            if (pid > 0)
+            {
+                int wpid;
+                do
+                {
+                    wpid = waitpid(pid, &status, WUNTRACED);
+                }
+                while (wpid == -1 && errno == EINTR);
+                
+                if (wpid == -1)
+                {
+                    perror("wait");
+                }
+                
+                if (status > 0)
+                {
+                    previous = false;
+                }
+                
+                else if (WEXITSTATUS(status) == 0)
+                {
+                    previous = true;
+                }
+                
+                else if (WEXITSTATUS(status) == 1)
+                {
+                    previous = false;
+                }
+            }
             ++index;
         }
         int status = 0;
@@ -454,7 +455,47 @@ void Pipe::run(string command, bool &previous)
             string left = command.substr(0, index);
             string right = command.substr(command.find(">>") + 2);
             int opened = openFile(right, permissions, previous);
-            execute(left, -1, opened, -1, previous);
+            int status = 0;
+            pid_t pid = fork();
+            if (pid == -1)
+            {
+                perror("fork");
+                previous = false;
+                return;
+            }
+            if (pid == 0)
+            {
+              	execute(left, -1, opened, -1, previous);
+            }
+            if (pid > 0)
+            {
+                int wpid;
+                do
+                {
+                    wpid = waitpid(pid, &status, WUNTRACED);
+                }
+                while (wpid == -1 && errno == EINTR);
+                
+                if (wpid == -1)
+                {
+                    perror("wait");
+                }
+                
+                if (status > 0)
+                {
+                    previous = false;
+                }
+                
+                else if (WEXITSTATUS(status) == 0)
+                {
+                    previous = true;
+                }
+                
+                else if (WEXITSTATUS(status) == 1)
+                {
+                    previous = false;
+                }
+            }
             if (close(opened) == -1)
             {
                 perror("close");
@@ -470,8 +511,47 @@ void Pipe::run(string command, bool &previous)
             string left = command.substr(0, index);
             string right = command.substr(command.find(">") + 1);
             int opened = openFile(right, permissions, previous);
-            execute(left, -1, opened, -1, previous);
-            cout << "TEST" << endl;
+            int status = 0;
+            pid_t pid = fork();
+            if (pid == -1)
+            {
+                perror("fork");
+                previous = false;
+                return;
+            }
+            if (pid == 0)
+            {
+              	execute(left, -1, opened, -1, previous);
+            }
+            if (pid > 0)
+            {
+                int wpid;
+                do
+                {
+                    wpid = waitpid(pid, &status, WUNTRACED);
+                }
+                while (wpid == -1 && errno == EINTR);
+                
+                if (wpid == -1)
+                {
+                    perror("wait");
+                }
+                
+                if (status > 0)
+                {
+                    previous = false;
+                }
+                
+                else if (WEXITSTATUS(status) == 0)
+                {
+                    previous = true;
+                }
+                
+                else if (WEXITSTATUS(status) == 1)
+                {
+                    previous = false;
+                }
+            }
             if (close(opened) == -1)
             {
                 perror("close");
